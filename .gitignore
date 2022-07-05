@@ -7,7 +7,10 @@ node_modules
 
 .bin
 .cache
-.temp
+.cert
+
+rune.exe
+rune.zip
 
 debug.log
 failed_tests
@@ -19,3 +22,5 @@ failed_tests
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+
+.env.local

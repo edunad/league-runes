@@ -93,7 +93,5 @@ export class MenuService {
                 SettingsService.setSetting('provider', data.providers);
                 this.printMenu();
             });
-
-        console.log(`\n\n--------------------- LOGS ---------------------\n`);
     }
 }

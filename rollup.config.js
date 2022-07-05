@@ -2,6 +2,7 @@
 import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import json from '@rollup/plugin-json';
+import copy from 'rollup-plugin-copy';
 
 import typescript from '@rollup/plugin-typescript';
 import del from 'rollup-plugin-delete';
@@ -10,7 +11,7 @@ export default {
     input: './index.ts',
     output: {
         format: 'cjs',
-        dir: './.bin',
+        dir: './.output',
 
         name: 'RUNES',
         preserveModules: true,
@@ -18,12 +19,18 @@ export default {
         exports: 'named',
     },
     plugins: [
-        del({ targets: ['.bin/'] }),
+        del({ targets: ['.output/'] }),
         typescript(),
-        //commonjs(),
+        commonjs(),
 
         nodeResolve({ exportsConditions: ['node'], preferBuiltins: true, custom: { 'node-resolve': { isRequire: true } } }),
 
         json(),
+
+        copy({
+            targets: [{ src: './.patches/chalk/browser.js', dest: './.output/node_modules/chalk/source/vendor/supports-color' }],
+            verbose: true,
+            hook: 'closeBundle',
+        }),
     ],
 };
