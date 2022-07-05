@@ -50,7 +50,7 @@ export class SettingsService {
     private static getDefaultSettings(): any {
         return {
             version: CURRENT_VERSION.version,
-            provider: 'uop',
+            provider: 'ugg',
 
             'skin-enabled': true,
             'skin-chroma-enabled': true,
