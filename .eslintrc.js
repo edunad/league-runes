@@ -18,21 +18,8 @@ module.exports = {
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/explicit-module-boundary-types': 'off',
         '@typescript-eslint/explicit-member-accessibility': 'error',
-        '@typescript-eslint/explicit-function-return-type': 'error',
         '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
         '@typescript-eslint/no-require-imports': 'error',
-        '@typescript-eslint/typedef': [
-            'error',
-            {
-                arrayDestructuring: true,
-                arrowParameter: true,
-                memberVariableDeclaration: true,
-                parameter: true,
-                objectDestructuring: true,
-                propertyDeclaration: true,
-                variableDeclaration: true,
-            },
-        ],
         '@typescript-eslint/no-inferrable-types': 'off',
     },
 };

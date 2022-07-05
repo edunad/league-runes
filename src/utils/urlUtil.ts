@@ -1,23 +1,23 @@
 'use strict';
 
 /*
-* Copyright © Mythical Rawr 2014-2019
-* Authors: Eduardo de Sousa Fernandes
-* Website: www.failcake.me
-*/
+ * Copyright © Mythical Rawr 2014-2019
+ * Authors: Eduardo de Sousa Fernandes
+ * Website: www.failcake.me
+ */
 
 import { URL } from 'url';
 
 export const getParamFromUrl = (rawUrl: string, param: string): string => {
     if (rawUrl == null || param == null) return null;
 
-    let parseObj = new URL(rawUrl);
-    let params = parseObj.searchParams;
+    const parseObj = new URL(rawUrl);
+    const params = parseObj.searchParams;
     return params.get(param);
-}
+};
 
-export const getAgent = (random: boolean = true): string | string[] => {
-    let agents = [
+export const getAgent = (): string => {
+    const agents = [
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246',
         'Mozilla/5.0 (CrKey armv7l 1.5.16041) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.0 Safari/537.36',
         'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/1.0.154.53 Safari/525.19',
@@ -71,9 +71,8 @@ export const getAgent = (random: boolean = true): string | string[] => {
         'Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko',
         'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:56.0) Gecko/20100101 Firefox/56.0',
         'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101 Firefox/60.0',
-        'Mozilla/5.0 (X11; CrOS x86_64 11021.56.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.76 Safari/537.36'
+        'Mozilla/5.0 (X11; CrOS x86_64 11021.56.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.76 Safari/537.36',
     ];
 
-    if (random) return agents[Math.getRandom(0, agents.length - 1)];
-    else return agents;
-}
+    return agents[Math.getRandom(0, agents.length - 1)];
+};

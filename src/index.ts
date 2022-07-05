@@ -1,53 +1,92 @@
-import { createWebSocketConnection } from 'league-connect';
-
 import './extensions/math';
 
-import {MetaSRC} from './plugins/metasrc';
+import { CredentialsAPI } from './api/credentials';
+import { SocketAPI } from './api/socket';
+import { PerkAPI } from './api/perk';
+import { SkinAPI } from './api/skins';
 
-// https://lcu.vivide.re/#operation--lol-collections-v1-inventories--summonerId--runes-get
+import { MetaSRC } from './plugins/metasrc';
+import { OPGG } from './plugins/opgg';
+import { UGG } from './plugins/ugg';
+
+import { CacheService } from './services/cache';
+import { MenuService } from './services/menu';
+import { SettingsService } from './services/settings';
+
+import { Gamemode } from './types/gamemode';
+import { RunePlugin } from './types/runePlugin';
+import { Champion } from './types/champion';
+
+const plugins: { [id: string]: RunePlugin } = {
+    opgg: new OPGG(),
+    metasrc: new MetaSRC(),
+    ugg: new UGG(),
+};
+
 const main = async () => {
-    const ws = await createWebSocketConnection({
-        authenticationOptions: {
-            awaitConnection: true,
-        },
-        pollInterval: 3000
+    await SettingsService.init();
+    await CacheService.init();
+    await CredentialsAPI.init();
+    await SocketAPI.init();
+
+    // Startup menu
+    MenuService.init();
+
+    /*
+    const provider = plugins['ugg'];
+    const runes = await provider.getRunes('classic', {
+        name: 'jinx',
+        originalName: 'jinx',
+
+        championId: 0,
     });
 
-    /*{
-        championName: 'Elise',
-        isSkinGrantedFromBoost: false,
-        selectedChampionId: 60,
-        selectedSkinId: 60002,
-        showSkinSelector: true,
-        skinSelectionDisabled: false
-    }*/
+    console.warn(runes);
+    throw new Error('test');
+    */
 
-    ws.subscribe('/lol-champ-select/v1/skin-selector-info', (data, event: any) => {
-        if(event.eventType !== 'Create') return;
-        console.warn("/lol-champ-select/v1/skin-selector-info", data, event);
+    /// -------
+    let gamemode: Gamemode = 'classic';
+    let champion: Champion | null = null;
+
+    SocketAPI.event.on('onChampSelected', (data: Champion) => {
+        champion = data;
+
+        // Update menu ---
+        MenuService.log(`[Runes] Champion ${data.originalName} for gamemode ${gamemode} detected!`);
+        MenuService.setChampion(data);
+        /// -----
+
+        if (SettingsService.getSetting('skin-enabled')) {
+            MenuService.log(`[Runes] Randomizing skin..`);
+
+            SkinAPI.getSkins()
+                .then((skins) => {
+                    SkinAPI.selectSkin(skins.length == 1 ? skins[0] : skins[Math.getRandom(1, skins.length - 1)]);
+                })
+                .catch((err) => MenuService.log(err));
+        }
+
+        /// ----
+        if (SettingsService.getSetting('autorune-enabled')) {
+            const provider = plugins[SettingsService.getSetting('provider')];
+
+            MenuService.log(`[Runes] Gathering runes from ${provider.pluginId} - ${gamemode} | ${champion.originalName}`);
+
+            Promise.all([PerkAPI.getPages(), provider.getRunes(gamemode, champion)])
+                .then((data) => {
+                    PerkAPI.setPerks(data[0][0], data[1], `[${gamemode}] ${champion.originalName.toUpperCase()}`).then(() => {
+                        MenuService.log('[Runes] Updated runes!');
+                    });
+                })
+                .catch((err) => MenuService.log(err));
+        }
     });
 
-    ws.subscribe('/lol-gameflow/v1/session', (data, event: any) => {
-        if(event.eventType !== 'Update' && data.phase === 'ChampSelect') return;
-        console.warn(data.map.gameMode);
+    SocketAPI.event.on('onGamemodeUpdate', (data: Gamemode) => {
+        gamemode = data;
     });
+};
 
-    const test = await MetaSRC.getChampion('jinx');
-
-    /*ws.subscribe('/lol-lobby/v2/lobby', (data, event: any) => {
-        //if(event.eventType !== 'Update') return;
-        console.warn("/lol-lobby/v2/lobby", data, event);
-    });*/
-
-    /*ws.subscribe('/lol-chat/v1/me', (data, event: any) => {
-        if(event.eventType !== 'Update') return;
-        console.warn("/lol-chat/v1/me", data, event);
-    });*/
-
-
-    /*ws.on('message', (message) => {
-        console.warn(message);
-    });*/
-}
-
-main()
+process.on('unhandledRejection', (reason: any) => console.warn(`!!FATAL!! ${reason}`));
+main().catch((err) => console.warn(`!!FATAL!! ${err}`));

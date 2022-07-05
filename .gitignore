@@ -6,6 +6,7 @@ node_modules
 *.tgz
 
 .bin
+.cache
 
 debug.log
 failed_tests

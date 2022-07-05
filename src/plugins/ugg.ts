@@ -1,11 +1,5 @@
 'use strict';
 
-/*
- * Copyright © Mythical Rawr 2014-2019
- * Authors: Eduardo de Sousa Fernandes
- * Website: www.failcake.me
- */
-
 import { load } from 'cheerio';
 import fetch from 'node-fetch';
 
@@ -18,14 +12,14 @@ import { Gamemode } from '../types/gamemode';
 import { Champion } from '../types/champion';
 import { PerkData } from '../types/perks';
 
-import { PerkAPI } from '../api/perk';
-
 import { CacheService } from '../services/cache';
 import { MenuService } from '../services/menu';
 
-export class MetaSRC implements RunePlugin {
-    public readonly pluginId: string = 'metasrc';
-    private readonly WEBSITE: string = 'https://www.metasrc.com';
+import { PerkAPI } from '../api/perk';
+
+export class UGG implements RunePlugin {
+    public readonly pluginId: string = 'ugg';
+    private readonly WEBSITE: string = 'https://www.u.gg';
 
     public cache: CacheService;
 
@@ -37,7 +31,7 @@ export class MetaSRC implements RunePlugin {
         // Check cache first
         const cachedPerks = await this.cache.readCache(gamemode, champion);
         if (cachedPerks) {
-            MenuService.log(`[MetaSRC] Using cached data: ${gamemode} - ${champion}`);
+            MenuService.log(`[U.op] Using cached data: ${gamemode} - ${champion}`);
             return cachedPerks.perks;
         }
         // ---
@@ -47,7 +41,7 @@ export class MetaSRC implements RunePlugin {
             selectedPerkIds: [],
         };
 
-        return fetch(`${this.WEBSITE}/${this.mapGamemode(gamemode)}/champion/${this.mapChampion(champion)}`, {
+        return fetch(`${this.WEBSITE}/lol/champions/${this.mapChampion(champion)}${this.mapGamemode(gamemode)}/build`, {
             method: 'GET',
             redirect: 'follow',
             follow: 10,
@@ -57,24 +51,27 @@ export class MetaSRC implements RunePlugin {
             },
         })
             .then((resp) => {
-                if (!resp.ok) throw new Error(`[MetaSRC] Invalid response : ${resp.status}`);
+                if (!resp.ok) throw new Error(`[U.op] Invalid response : ${resp.status}`);
                 return resp.text();
             })
             .then((data) => {
                 return load(data);
             })
             .then(($) => {
-                if ($ == null) return Promise.reject('Failed to get champion');
+                if ($ == null) return Promise.reject('[U.op] Failed to get champion');
 
-                const runeContainer = $('#perks > div:last-child > .content-selected svg > image');
-                if (!runeContainer) throw new Error(`[MetaSRC] Failed to get runes`);
+                const runeImgs = $(`.rune-trees-container-2:first-of-type img`);
+                if (!runeImgs) throw new Error(`[U.op] Failed to get runes`);
 
-                runeContainer.each((i, r) => {
-                    const runeId = $(r).attr('data-xlink-href');
-                    if (!runeId) throw new Error(`[MetaSRC] Failed to fetch rune index {${i}}`);
+                runeImgs.each((i, r) => {
+                    const parentClass = $(r).parent().attr('class');
+                    if (parentClass.indexOf('-inactive') !== -1) return;
 
-                    const picId = basename(runeId).toLocaleLowerCase();
-                    const isSpecial = runeId.indexOf('metasrc.com') !== -1;
+                    const runeId = $(r).attr('src');
+                    if (!runeId) throw new Error(`[U.op] Failed to fetch rune index {${i}}`);
+
+                    const isSpecial = runeId.indexOf('assets/lol/runes') !== -1;
+                    const picId = basename(runeId).replace('.webp', '.png').toLocaleLowerCase();
 
                     if (isSpecial) {
                         const styleId = parseInt(picId.replace('.png', ''));
@@ -85,7 +82,7 @@ export class MetaSRC implements RunePlugin {
                         return;
                     }
 
-                    if (!perkMap[picId]) throw new Error(`[MetaSRC] Failed to map rune {${picId}}`);
+                    if (!perkMap[picId]) throw new Error(`[U.op] Failed to map rune {${picId}}`);
                     runes.selectedPerkIds.push(perkMap[picId]);
                 });
 
@@ -93,7 +90,7 @@ export class MetaSRC implements RunePlugin {
             })
             .then((runes) => {
                 if (!runes.primaryStyleId || !runes.subStyleId || runes.selectedPerkIds.length <= 0)
-                    throw new Error(`[MetaSRC] No runes found for {${champion.originalName}}`);
+                    throw new Error(`[U.op] No runes found for {${champion.originalName}}`);
                 return runes;
             })
             .then(() => {
@@ -110,17 +107,7 @@ export class MetaSRC implements RunePlugin {
     }
 
     public mapGamemode(gamemode: Gamemode): string {
-        switch (gamemode) {
-            case 'aram':
-                return 'aram';
-            case 'classic':
-                return '5v5';
-            case 'twisted-treeline':
-                return '3v3';
-            case 'urf':
-                return 'arurf';
-            default:
-                return '5v5';
-        }
+        if (gamemode === 'classic') return '';
+        return `-${gamemode}`; // AKA: champion-gamemode
     }
 }
