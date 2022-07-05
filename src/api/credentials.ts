@@ -7,7 +7,7 @@ export class CredentialsAPI {
             .then((cred) => {
                 this.apiCred = cred;
             })
-            .catch((err) => console.warn('Failed to authenticate with league!'));
+            .catch((err) => console.warn(`[CredentialsAPI] ${err}`));
     }
 
     public static getUserId(): number {

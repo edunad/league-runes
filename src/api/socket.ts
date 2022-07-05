@@ -16,7 +16,7 @@ export class SocketAPI {
             },
             pollInterval: 3000,
         }).catch((err) => {
-            console.warn('Failed to authenticate with league!');
+            console.warn(`[CredentialsAPI] ${err}`);
             return null;
         });
 

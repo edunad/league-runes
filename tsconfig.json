@@ -1,23 +1,22 @@
 {
-  "compilerOptions": {
-      "target": "es6",
-      "emitDecoratorMetadata": true,
-      "experimentalDecorators": true,
-      "allowSyntheticDefaultImports": true,
-      "forceConsistentCasingInFileNames": true,
-      "module": "commonjs",
-      "moduleResolution": "node",
-      "sourceMap": true,
-      "strictNullChecks": false,
-      "declaration": false,
-      "noEmitHelpers": true,
-      "importHelpers": true,
-      "resolveJsonModule": true,
-      "jsx": "react-jsx",
-      "lib": ["dom", "es6"],
-      "typeRoots": ["node_modules/@types"],
-      "baseUrl": "./src",
-      "sourceRoot": "./src"
-  },
-  "exclude": ["node_modules"]
+    "compilerOptions": {
+        "target": "ESNext",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "forceConsistentCasingInFileNames": true,
+        "esModuleInterop": true,
+        "module": "Node16",
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "strictNullChecks": false,
+        "declaration": false,
+        "noEmitHelpers": true,
+        "importHelpers": true,
+        "resolveJsonModule": true,
+        "lib": ["es6"],
+        "typeRoots": ["node_modules/@types"],
+        "outDir": "./.bin"
+    },
+    "exclude": ["node_modules"]
 }
