@@ -11,6 +11,7 @@ node_modules
 
 rune.exe
 rune.zip
+settings.json
 
 debug.log
 failed_tests
