@@ -46,7 +46,7 @@ export class MenuService {
                     message: 'Settings',
                     name: 'settings',
                     choices: [
-                        new inquirer.Separator('SKINS'),
+                        new inquirer.Separator('SKINS ===='),
                         {
                             name: '  Enable random skin',
                             value: 'skin-enabled',
@@ -57,11 +57,16 @@ export class MenuService {
                             value: 'skin-chroma-enabled',
                             checked: SettingsService.getSetting('skin-chroma-enabled'),
                         },
-                        new inquirer.Separator('RUNES'),
+                        new inquirer.Separator('AUTO ===='),
                         {
                             name: '  Enable Auto-Runes',
-                            value: 'autorune-enabled',
-                            checked: SettingsService.getSetting('autorune-enabled'),
+                            value: 'autorunes-enabled',
+                            checked: SettingsService.getSetting('autorunes-enabled'),
+                        },
+                        {
+                            name: '  Enable Auto-Items',
+                            value: 'autoitems-enabled',
+                            checked: SettingsService.getSetting('autoitems-enabled'),
                         },
                     ],
                 },
@@ -88,7 +93,8 @@ export class MenuService {
             .then((data) => {
                 SettingsService.setSetting('skin-enabled', data.settings.indexOf('skin-enabled') !== -1, false);
                 SettingsService.setSetting('skin-chroma-enabled', data.settings.indexOf('skin-chroma-enabled') !== -1, false);
-                SettingsService.setSetting('autorune-enabled', data.settings.indexOf('autorune-enabled') !== -1, false);
+                SettingsService.setSetting('autorunes-enabled', data.settings.indexOf('autorunes-enabled') !== -1, false);
+                SettingsService.setSetting('autoitems-enabled', data.settings.indexOf('autoitems-enabled') !== -1, false);
 
                 SettingsService.setSetting('provider', data.providers);
                 this.printMenu();

@@ -11,6 +11,8 @@ import { RunePlugin } from '../types/runePlugin';
 import { Gamemode } from '../types/gamemode';
 import { Champion } from '../types/champion';
 import { PerkData } from '../types/perks';
+import { Build } from '../types/build';
+import { ItemBlock } from '../types/itemSet';
 
 import { CacheService } from '../services/cache';
 import { MenuService } from '../services/menu';
@@ -27,19 +29,16 @@ export class UGG implements RunePlugin {
         this.cache = new CacheService(this.pluginId);
     }
 
-    public async getRunes(gamemode: Gamemode, champion: Champion): Promise<PerkData> {
+    public async getBuild(gamemode: Gamemode, champion: Champion): Promise<Build> {
         // Check cache first
         const cachedPerks = await this.cache.readCache(gamemode, champion);
         if (cachedPerks) {
-            MenuService.log(`[U.op] Using cached data: ${gamemode} - ${champion}`);
-            return cachedPerks.perks;
+            MenuService.log(`[U.op] Using cached data: ${gamemode} - ${champion.originalName}`);
+            return cachedPerks.build;
         }
         // ---
 
-        const perkMap = await PerkAPI.getPerks();
-        const runes: PerkData = {
-            selectedPerkIds: [],
-        };
+        const build: Build = { perks: null, items: [] };
 
         return fetch(`${this.WEBSITE}/lol/champions/${this.mapChampion(champion)}${this.mapGamemode(gamemode)}/build`, {
             method: 'GET',
@@ -57,46 +56,64 @@ export class UGG implements RunePlugin {
             .then((data) => {
                 return load(data);
             })
-            .then(($) => {
+            .then(async ($) => {
                 if ($ == null) return Promise.reject('[U.op] Failed to get champion');
 
-                const runeImgs = $(`.rune-trees-container-2:first-of-type img`);
-                if (!runeImgs) throw new Error(`[U.op] Failed to get runes`);
-
-                runeImgs.each((i, r) => {
-                    const parentClass = $(r).parent().attr('class');
-                    if (parentClass.indexOf('-inactive') !== -1) return;
-
-                    const runeId = $(r).attr('src');
-                    if (!runeId) throw new Error(`[U.op] Failed to fetch rune index {${i}}`);
-
-                    const isSpecial = runeId.indexOf('assets/lol/runes') !== -1;
-                    const picId = basename(runeId).replace('.webp', '.png').toLocaleLowerCase();
-
-                    if (isSpecial) {
-                        const styleId = parseInt(picId.replace('.png', ''));
-
-                        if (runes.primaryStyleId) runes.subStyleId = styleId;
-                        else runes.primaryStyleId = styleId;
-
-                        return;
-                    }
-
-                    if (!perkMap[picId]) throw new Error(`[U.op] Failed to map rune {${picId}}`);
-                    runes.selectedPerkIds.push(perkMap[picId]);
-                });
-
-                return runes;
-            })
-            .then((runes) => {
+                const runes = await this.getRunes($);
                 if (!runes.primaryStyleId || !runes.subStyleId || runes.selectedPerkIds.length <= 0)
-                    throw new Error(`[U.op] No runes found for {${champion.originalName}}`);
-                return runes;
+                    throw new Error(`[U.op] No runes found for ${champion}`);
+
+                const items = await this.getItems($);
+                if (!items) throw new Error(`[U.op] No items found for ${champion}`);
+
+                build.perks = runes;
+                build.items = items;
+
+                return build;
             })
-            .then(() => {
-                this.cache.writeCache(gamemode, champion, runes);
-                return runes;
+            .then((build) => {
+                this.cache.writeCache(gamemode, champion, build);
+                return build;
             });
+    }
+
+    public async getRunes($: any): Promise<PerkData> {
+        const perkMap = await PerkAPI.getPerks();
+        const runes: PerkData = {
+            selectedPerkIds: [],
+        };
+
+        const runeImgs = $(`.rune-trees-container-2:first-of-type img`);
+        if (!runeImgs) throw new Error(`[U.op] Failed to get runes`);
+
+        runeImgs.each((i, r) => {
+            const parentClass = $(r).parent().attr('class');
+            if (parentClass.indexOf('-inactive') !== -1) return;
+
+            const runeId = $(r).attr('src');
+            if (!runeId) throw new Error(`[U.op] Failed to fetch rune index {${i}}`);
+
+            const isSpecial = runeId.indexOf('assets/lol/runes') !== -1;
+            const picId = basename(runeId).replace('.webp', '.png').toLocaleLowerCase();
+
+            if (isSpecial) {
+                const styleId = parseInt(picId.replace('.png', ''));
+
+                if (runes.primaryStyleId) runes.subStyleId = styleId;
+                else runes.primaryStyleId = styleId;
+
+                return;
+            }
+
+            if (!perkMap[picId]) throw new Error(`[U.op] Failed to map rune {${picId}}`);
+            runes.selectedPerkIds.push(perkMap[picId]);
+        });
+
+        return runes;
+    }
+
+    public async getItems($: any): Promise<ItemBlock[]> {
+        return [];
     }
 
     public mapChampion(champion: Champion): string {
@@ -107,7 +124,7 @@ export class UGG implements RunePlugin {
     }
 
     public mapGamemode(gamemode: Gamemode): string {
-        if (gamemode === 'classic') return '';
+        if (gamemode === 'practicetool' || gamemode === 'classic') return '';
         return `-${gamemode}`; // AKA: champion-gamemode
     }
 }

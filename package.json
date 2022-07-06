@@ -4,7 +4,7 @@
     "private": true,
     "version": "0.0.1",
     "scripts": {
-        "start": "vite-node ./src/index.ts",
+        "start": "vite-node ./index.ts",
         "build": "rollup -c && node ./compile.js",
         "lint": "eslint ./**/*.{ts,tsx} --quiet",
         "pretty": "pretty-quick && yarn lint --fix",
@@ -24,10 +24,11 @@
         "cheerio": "^1.0.0-rc.12",
         "fs-extra": "^10.1.0",
         "inquirer": "^9.0.0",
-        "league-connect": "^6.0.0-rc3",
+        "league-connect": "6.0.0-rc3",
         "node-fetch": "^3.2.6",
         "nugget": "^2.0.2",
-        "terminal-art": "^1.4.3"
+        "terminal-art": "^1.4.3",
+        "uuid": "^8.3.2"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^22.0.1",

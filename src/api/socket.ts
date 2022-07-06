@@ -40,5 +40,9 @@ export class SocketAPI {
             if (event.eventType !== 'Update' && data.phase === 'ChampSelect') return;
             this.event.emit('onGamemodeUpdate', data.map.gameMode.toLowerCase() as Gamemode);
         });
+
+        /*this.ws.on('message', (stream) => {
+            console.log(stream);
+        });*/
     }
 }

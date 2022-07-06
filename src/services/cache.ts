@@ -1,11 +1,11 @@
 import { ensureDir, writeJson, readJson, stat } from 'fs-extra';
 
+import { Build } from '../types/build';
 import { Champion } from '../types/champion';
 import { Gamemode } from '../types/gamemode';
-import { PerkData } from '../types/perks';
 
 export interface CacheData {
-    perks: PerkData;
+    build: Build;
     ttl: number;
 }
 
@@ -31,10 +31,10 @@ export class CacheService {
         });
     }
 
-    public async writeCache(gamemode: Gamemode, champion: Champion, perk: PerkData): Promise<boolean> {
+    public async writeCache(gamemode: Gamemode, champion: Champion, build: Build): Promise<boolean> {
         await ensureDir(`${this.cachePath}`);
         return writeJson(`${this.cachePath}/${gamemode}-${champion.name}.json`, {
-            perks: perk,
+            build: build,
             ttl: Math.floor(+new Date()) + this.TTL * 1000,
         } as CacheData)
             .then(() => true)
