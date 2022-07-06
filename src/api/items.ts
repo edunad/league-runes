@@ -44,23 +44,42 @@ export class ItemAPI {
             .catch(() => null);
     }
 
-    public static async updateItemSet(set: ItemSet, index: number = 0): Promise<boolean> {
-        const builds = await this.getItemBuilds();
+    public static async createItemPage(): Promise<boolean> {
         const user = CredentialsAPI.getUser();
 
-        let hasAtleastABuild: boolean = true;
+        return createHttp1Request(
+            {
+                method: 'POST',
+                url: `/lol-item-sets/v1/item-sets/${user.summonerId}/sets`,
+                body: {
+                    title: 'TEMP',
+                },
+            },
+            CredentialsAPI.getToken(),
+        )
+            .then((resp) => {
+                return resp.ok;
+            })
+            .catch((err) => {
+                return false;
+            });
+    }
+
+    public static async updateItemSet(set: ItemSet, index: number = 0): Promise<boolean> {
+        let builds = await this.getItemBuilds();
+        const user = CredentialsAPI.getUser();
+
         if (!builds || !builds.itemSets || builds.itemSets.length <= 0) {
             MenuService.log(`[ItemAPI] No item build found, creating one..`);
-            hasAtleastABuild = false;
-        } else {
-            MenuService.log(`[ItemAPI] Updating build index ${index}..`);
+
+            await this.createItemPage();
+
+            builds = await this.getItemBuilds();
+            if (!builds || !builds.itemSets || builds.itemSets.length <= 0) throw new Error('[ItemAPI] Failed to create a item build page');
         }
 
-        if (hasAtleastABuild) {
-            set.uid = builds.itemSets[index].uid; // Hi-jack the selected index build.
-        } else {
-            set.uid = uuidv4();
-        }
+        MenuService.log(`[ItemAPI] Updating build index ${index}..`);
+        set.uid = builds.itemSets[index].uid; // Hi-jack the selected index build.
 
         const newBuild: ItemBuild = {
             accountId: user.accountId,
@@ -70,9 +89,9 @@ export class ItemAPI {
 
         return createHttp1Request(
             {
-                method: hasAtleastABuild ? 'PUT' : 'POST',
+                method: 'PUT',
                 url: `/lol-item-sets/v1/item-sets/${user.summonerId}/sets`,
-                body: hasAtleastABuild ? { ...newBuild } : { ...set },
+                body: { ...newBuild },
             },
             CredentialsAPI.getToken(),
         )

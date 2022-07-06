@@ -113,7 +113,12 @@ export class UGG implements RunePlugin {
     }
 
     public async getItems($: any): Promise<ItemBlock[]> {
-        return [];
+        const containers = $('.tooltip-container');
+        if (!containers) throw new Error(`[U.op] Failed to get items`);
+
+        const blocks: ItemBlock[] = [];
+
+        return blocks;
     }
 
     public mapChampion(champion: Champion): string {

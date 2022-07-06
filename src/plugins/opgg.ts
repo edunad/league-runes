@@ -120,7 +120,7 @@ export class OPGG implements RunePlugin {
     }
 
     public async getItems($: any): Promise<ItemBlock[]> {
-        return [];
+        return null;
     }
 
     public mapChampion(champion: Champion): string {

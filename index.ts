@@ -47,22 +47,7 @@ const main = async () => {
         originalName: 'Jinx',
 
         championId: 0,
-    });
-
-    const items = await ItemAPI.updateItemSet({
-        associatedChampions: [53],
-        associatedMaps: [],
-        blocks: [...runes.items],
-        map: 'any',
-        mode: 'any',
-        preferredItemSlots: [],
-        sortrank: 0,
-        startedFrom: 'blank',
-        title: 'Blitz test',
-        type: 'custom',
-    });
-
-    console.warn(items);*/
+    });*/
 
     /// -------
     let gamemode: Gamemode = 'classic';

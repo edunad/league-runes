@@ -49,7 +49,6 @@ export class CacheService {
             .then((data) => {
                 if (!data) return null;
                 if (data.ttl > Math.floor(+new Date())) {
-                    console.warn('ttl ded');
                     return null;
                 }
 
