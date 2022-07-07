@@ -33,7 +33,7 @@ export class UGG implements RunePlugin {
         // Check cache first
         const cachedPerks = await this.cache.readCache(gamemode, champion);
         if (cachedPerks) {
-            MenuService.log(`[U.op]`, `Using cached data: ${gamemode} - ${champion.originalName}`);
+            MenuService.log(`[U.op] Using cached data: ${gamemode} - ${champion.originalName}`);
             return cachedPerks.build;
         }
         // ---

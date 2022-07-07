@@ -32,7 +32,7 @@ export class OPGG implements RunePlugin {
         // Check cache first
         const cachedPerks = await this.cache.readCache(gamemode, champion);
         if (cachedPerks) {
-            MenuService.log(`[op.GG]`, `Using cached data: ${gamemode} - ${champion.originalName}`);
+            MenuService.log(`[op.GG] Using cached data: ${gamemode} - ${champion.originalName}`);
             return cachedPerks.build;
         }
         // ---

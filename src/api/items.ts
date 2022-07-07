@@ -69,7 +69,7 @@ export class ItemAPI {
         const user = CredentialsAPI.getUser();
 
         if (!builds || !builds.itemSets || builds.itemSets.length <= 0) {
-            MenuService.log(`[ItemAPI]`, `No item build found, creating one..`);
+            MenuService.log(`[ItemAPI] No item build found, creating one..`);
 
             await this.createItemPage();
 
@@ -77,7 +77,7 @@ export class ItemAPI {
             if (!builds || !builds.itemSets || builds.itemSets.length <= 0) throw new Error('Failed to create a item build page');
         }
 
-        MenuService.log(`[ItemAPI]`, `Updating build index ${index}..`);
+        MenuService.log(`[ItemAPI] Updating build index ${index}..`);
         set.uid = builds.itemSets[index].uid; // Hi-jack the selected index build.
 
         const newBuild: ItemBuild = {

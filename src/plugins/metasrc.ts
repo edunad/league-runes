@@ -39,7 +39,7 @@ export class MetaSRC implements RunePlugin {
         // Check cache first
         const cachedPerks = await this.cache.readCache(gamemode, champion);
         if (cachedPerks) {
-            MenuService.log(`[MetaSRC]`, `Using cached data: ${gamemode} - ${champion.originalName}`);
+            MenuService.log(`[MetaSRC] Using cached data: ${gamemode} - ${champion.originalName}`);
             return cachedPerks.build;
         }
         // ---

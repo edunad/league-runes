@@ -19,6 +19,7 @@ import { Gamemode } from './src/types/gamemode';
 import { RunePlugin } from './src/types/runePlugin';
 import { Champion } from './src/types/champion';
 import { ItemSet } from './src/types/itemSet';
+import { Role } from './src/types/role';
 
 const plugins: { [id: string]: RunePlugin } = {
     opgg: new OPGG(),
@@ -27,19 +28,16 @@ const plugins: { [id: string]: RunePlugin } = {
 };
 
 const main = async () => {
-    console.warn(`\n---- INITIALIZING RUNES -----`);
-    process.stdout.write(`Waiting for league client...`);
+    // Startup menu
+    MenuService.init();
+    MenuService.log(`[Rune] Connecting to league client...`);
 
     await SettingsService.init();
     await CacheService.init();
     await CredentialsAPI.init();
     await SocketAPI.init();
 
-    process.stdout.write(`  OK\n`);
-    await new Promise((res) => setTimeout(res, 1000));
-
-    // Startup menu
-    MenuService.init();
+    MenuService.log(`[Rune] SUCCESS`);
 
     /*const provider = plugins['metasrc'];
     const runes = await provider.getBuild('aram', {
@@ -52,13 +50,14 @@ const main = async () => {
     /// -------
     let gamemode: Gamemode = 'classic';
     let champion: Champion | null = null;
+    let role: Role | null = null;
 
     SocketAPI.event.on('onChampSelected', (data: Champion) => {
         champion = data;
 
         // Update menu ---
         MenuService.log(`[Runes] Champion ${data.originalName} for gamemode ${gamemode} detected!`);
-        MenuService.setChampion(data);
+        //MenuService.setChampionAvatar(data.avatarPic);
         /// -----
 
         if (SettingsService.getSetting('skin-enabled')) {
@@ -84,13 +83,13 @@ const main = async () => {
                     if (SettingsService.getSetting('autorunes-enabled')) {
                         MenuService.log(`[Runes] Updating runes..`);
 
-                        if (!build.perks) MenuService.log(`[Runes] Tried to update runes, but could not find them on provider!`);
+                        if (!build.perks) MenuService.log(`[ERROR] Tried to update runes, but could not find them on provider!`);
                         else {
                             PerkAPI.getPages()
                                 .then((pages) => {
                                     PerkAPI.setPerks(pages[0], build.perks, buildName)
                                         .then(() => {
-                                            MenuService.log('[Runes] Updated runes!');
+                                            MenuService.log(`[Runes] Updated runes!`);
                                         })
                                         .catch((err) => MenuService.log(err));
                                 })
@@ -120,7 +119,7 @@ const main = async () => {
 
                                     ItemAPI.updateItemSet(itemSet)
                                         .then(() => {
-                                            MenuService.log('[Runes] Updated items!');
+                                            MenuService.log(`[Runes] Updated items!`);
                                         })
                                         .catch((err) => MenuService.log(err));
                                 })
@@ -135,11 +134,18 @@ const main = async () => {
     SocketAPI.event.on('onGamemodeUpdate', (data: Gamemode) => {
         gamemode = data;
     });
+
+    SocketAPI.event.on('onPlayerRoleUpdate', (data: Role) => {
+        role = data;
+    });
 };
 
-process.on('unhandledRejection', (reason: any) => console.warn(`!!FATAL!! ${reason}`));
+process.on('unhandledRejection', (reason: any) => {
+    MenuService.log(`ERROR: ${reason}`);
+});
+
 process.on('SIGTERM', () => {
     CredentialsAPI.shutdown();
 });
 
-main().catch((err) => console.warn(`!!FATAL!! ${err}`));
+main().catch((err) => MenuService.log(`ERROR: ${err}`));
