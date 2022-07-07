@@ -32,6 +32,8 @@ compile({
     },
 }).then(() => {
     fs.ensureDirSync('./.bin/.output/node_modules/league-connect');
+    fs.copySync('./node_modules/reblessed/usr', './.bin/.output/node_modules/reblessed/usr', { recursive: true, overwrite: true });
+
     fs.removeSync('.output'); // Remove compiled files
 
     nugget(

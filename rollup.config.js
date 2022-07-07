@@ -14,14 +14,19 @@ export default {
         dir: './.output',
 
         name: 'RUNES',
+
         preserveModules: true,
         sourcemap: true,
+
         exports: 'named',
     },
     plugins: [
         del({ targets: ['.output/'] }),
         typescript(),
-        commonjs(),
+        commonjs({
+            dynamicRequireTargets: ['./node_modules/reblessed/lib/widgets/*.js', './node_modules/reblessed/lib/*.js'],
+            dynamicRequireRoot: '/',
+        }),
 
         nodeResolve({ exportsConditions: ['node'], preferBuiltins: true, custom: { 'node-resolve': { isRequire: true } } }),
 
@@ -29,8 +34,8 @@ export default {
 
         copy({
             targets: [{ src: './.patches/chalk/browser.js', dest: './.output/node_modules/chalk/source/vendor/supports-color' }],
-            verbose: true,
             hook: 'closeBundle',
+            verbose: true,
         }),
     ],
 };

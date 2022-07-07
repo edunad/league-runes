@@ -6,6 +6,7 @@
     "scripts": {
         "start": "vite-node ./index.ts",
         "build": "rollup -c && node ./compile.js",
+        "build-test": "rollup -c && node .output/index.js",
         "lint": "eslint ./**/*.{ts,tsx} --quiet",
         "pretty": "pretty-quick && yarn lint --fix",
         "prepare": "husky install",
@@ -23,12 +24,11 @@
     "dependencies": {
         "cheerio": "^1.0.0-rc.12",
         "fs-extra": "^10.1.0",
-        "inquirer": "^9.0.0",
         "league-connect": "6.0.0-rc3",
         "node-fetch": "^3.2.6",
         "nugget": "^2.0.2",
-        "terminal-art": "^1.4.3",
-        "uuid": "^8.3.2"
+        "reblessed": "https://github.com/edunad/reblessed",
+        "terminal-art": "^1.4.3"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^22.0.1",

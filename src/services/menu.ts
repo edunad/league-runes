@@ -1,4 +1,4 @@
-import inquirer from 'inquirer';
+import blessed from 'reblessed';
 import { toAnsii } from 'terminal-art';
 
 import { Champion } from '../types/champion';
@@ -6,98 +6,156 @@ import { SettingsService } from './settings';
 
 export class MenuService {
     private static champion: Champion;
-    private static logger: inquirer.ui.BottomBar;
+    private static screen: blessed.Widgets.Screen;
+
+    private static logger: any;
+    private static champPic: any;
 
     public static init(): void {
-        this.logger = new inquirer.ui.BottomBar();
-        this.printMenu();
+        this.screen = blessed.screen({
+            title: 'RUNES =====',
+            /*autoPadding: true,
+            resizeTimeout: 300,
+            smartCSR: true,
+            warnings: false,
+            errors: true,*/
+        });
+
+        this.screen.key(['C-c'], () => {
+            process.exit(0);
+        });
+
+        this.title();
+        this.main();
     }
 
-    public static log(text: string): void {
-        this.logger.log.write(text);
+    public static log(title: string, text: string): void {
+        if (!this.logger) return;
+
+        this.logger.log(`{#0fe1ab-fg}%s{/}: {bold}%s{/bold}`, title, text);
+        this.screen.render();
     }
 
-    public static setChampion(champion): void {
-        this.champion = champion;
-        //this.printChampion();
+    public static customLog(text: string): void {
+        if (!this.logger) return;
+
+        this.logger.log(text);
+        this.screen.render();
     }
 
-    private static printChampion(): Promise<void> {
-        if (!this.champion) return Promise.resolve();
-        return toAnsii(`https://ddragon.leagueoflegends.com/cdn/12.12.1/img/champion/Blitzcrank.png`, {
-            maxCharWidth: 100,
+    public static setChampionAvatar(championPic: string): Promise<void> {
+        if (!this.champPic) return Promise.resolve();
+
+        return toAnsii(championPic, {
+            maxCharWidth: 29,
         })
             .then((art) => {
-                process.stdout.cursorTo(40, 0);
-                console.log(art);
+                if (!this.champPic || !this.screen) return;
+
+                this.champPic.content = art;
+                this.screen.render();
             })
             .catch((err) => console.warn(err));
     }
 
-    private static printMenu(): void {
-        console.clear();
-        console.log('------------------------------------------------------');
-        //this.printChampion();
+    private static title(): void {
+        if (!this.screen) return;
 
-        inquirer
-            .prompt([
-                {
-                    type: 'checkbox',
-                    message: 'Settings',
-                    name: 'settings',
-                    choices: [
-                        new inquirer.Separator('SKINS ===='),
-                        {
-                            name: '  Enable random skin',
-                            value: 'skin-enabled',
-                            checked: SettingsService.getSetting('skin-enabled'),
-                        },
-                        {
-                            name: '  Enable random chroma skin',
-                            value: 'skin-chroma-enabled',
-                            checked: SettingsService.getSetting('skin-chroma-enabled'),
-                        },
-                        new inquirer.Separator('AUTO ===='),
-                        {
-                            name: '  Enable Auto-Runes',
-                            value: 'autorunes-enabled',
-                            checked: SettingsService.getSetting('autorunes-enabled'),
-                        },
-                        {
-                            name: '  Enable Auto-Items',
-                            value: 'autoitems-enabled',
-                            checked: SettingsService.getSetting('autoitems-enabled'),
-                        },
-                    ],
-                },
-                {
-                    type: 'list',
-                    message: `Providers - Picked: ${SettingsService.getSetting('provider')}`,
-                    name: 'providers',
-                    choices: [
-                        {
-                            name: 'U.GG',
-                            value: 'ugg',
-                        },
-                        {
-                            name: 'MetaSRC',
-                            value: 'metasrc',
-                        },
-                        {
-                            name: 'OP.GG (Bit broken / not recommented :S)',
-                            value: 'opgg',
-                        },
-                    ],
-                },
-            ])
-            .then((data) => {
-                SettingsService.setSetting('skin-enabled', data.settings.indexOf('skin-enabled') !== -1, false);
-                SettingsService.setSetting('skin-chroma-enabled', data.settings.indexOf('skin-chroma-enabled') !== -1, false);
-                SettingsService.setSetting('autorunes-enabled', data.settings.indexOf('autorunes-enabled') !== -1, false);
-                SettingsService.setSetting('autoitems-enabled', data.settings.indexOf('autoitems-enabled') !== -1, false);
+        // Tittle screen
+        this.screen.append(
+            blessed.text({
+                top: 0,
+                left: 0,
+                width: '100%',
+                content: ' {bold}RUNES ====={/bold}',
+                tags: true,
+                align: 'center',
+            }),
+        );
 
-                SettingsService.setSetting('provider', data.providers);
-                this.printMenu();
-            });
+        this.screen.append(
+            blessed.line({
+                orientation: 'horizontal',
+                top: 1,
+                left: 0,
+                right: 0,
+            }),
+        );
+
+        this.screen.render();
+    }
+
+    private static main(): void {
+        if (!this.screen) return;
+
+        // CHAMPION RENDER ----
+        const picBox = blessed.box({
+            parent: this.screen,
+            left: '38%',
+            top: 2,
+            width: 30,
+            height: 13, // 40%
+        });
+
+        this.champPic = blessed.text({
+            parent: picBox,
+            top: 0,
+            left: 'center',
+            width: 28,
+            height: '100%',
+            content: '',
+        });
+        // ----
+
+        const button = blessed.button({
+            //content: 'Click me!',
+            parent: this.screen,
+            content: 'Click\nme!',
+            shrink: true,
+            mouse: true,
+            border: 'line',
+            style: {
+                fg: 'red',
+                bg: 'blue',
+            },
+            //height: 3,
+            left: 1,
+            //bottom: 6,
+            top: 3,
+            padding: 0,
+        });
+
+        button.on('press', function () {
+            button.setContent('Clicked!');
+            this.screen.render();
+        });
+
+        // LOGGER ----
+        this.logger = blessed.log({
+            parent: this.screen,
+            bottom: 0,
+            right: 0,
+            width: '50%',
+            height: '100%',
+            border: 'line',
+            tags: true,
+            keys: false,
+            mouse: false,
+            vi: true,
+            scrollback: 100,
+            label: 'LOG',
+            scrollbar: {
+                ch: '#',
+                track: {
+                    bg: '#34495e',
+                },
+                style: {
+                    inverse: true,
+                },
+            },
+        });
+        // ---
+
+        this.screen.render();
     }
 }

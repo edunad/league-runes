@@ -19,6 +19,7 @@ import { Gamemode } from './src/types/gamemode';
 import { RunePlugin } from './src/types/runePlugin';
 import { Champion } from './src/types/champion';
 import { ItemSet } from './src/types/itemSet';
+import { Role } from './src/types/role';
 
 const plugins: { [id: string]: RunePlugin } = {
     opgg: new OPGG(),
@@ -27,19 +28,16 @@ const plugins: { [id: string]: RunePlugin } = {
 };
 
 const main = async () => {
-    console.warn(`\n---- INITIALIZING RUNES -----`);
-    process.stdout.write(`Waiting for league client...`);
+    // Startup menu
+    MenuService.init();
+    MenuService.customLog(`[Rune] {#ecf0f1-fg}Connecting to league client...{/}`);
 
     await SettingsService.init();
     await CacheService.init();
     await CredentialsAPI.init();
     await SocketAPI.init();
 
-    process.stdout.write(`  OK\n`);
-    await new Promise((res) => setTimeout(res, 1000));
-
-    // Startup menu
-    MenuService.init();
+    MenuService.customLog(`[Rune] {#2ecc71-fg}SUCCESS{/}`);
 
     /*const provider = plugins['metasrc'];
     const runes = await provider.getBuild('aram', {
@@ -52,23 +50,24 @@ const main = async () => {
     /// -------
     let gamemode: Gamemode = 'classic';
     let champion: Champion | null = null;
+    let role: Role | null = null;
 
     SocketAPI.event.on('onChampSelected', (data: Champion) => {
         champion = data;
 
         // Update menu ---
-        MenuService.log(`[Runes] Champion ${data.originalName} for gamemode ${gamemode} detected!`);
-        MenuService.setChampion(data);
+        MenuService.log(`[Runes]`, `Champion ${data.originalName} for gamemode ${gamemode} detected!`);
+        MenuService.setChampionAvatar(data.avatarPic);
         /// -----
 
         if (SettingsService.getSetting('skin-enabled')) {
-            MenuService.log(`[Runes] Randomizing skin..`);
+            MenuService.log(`[Runes]`, `Randomizing skin..`);
 
             SkinAPI.getSkins()
                 .then((skins) => {
                     SkinAPI.selectSkin(skins.length == 1 ? skins[0] : skins[Math.getRandom(1, skins.length - 1)]);
                 })
-                .catch((err) => MenuService.log(err));
+                .catch((err) => MenuService.log(`[ERROR]`, err));
         }
 
         /// ----
@@ -76,33 +75,34 @@ const main = async () => {
             const provider = plugins[SettingsService.getSetting('provider')];
             const buildName = `[${gamemode}] ${champion.originalName.toUpperCase()}`;
 
-            MenuService.log(`[Runes] Gathering build from ${provider.pluginId} - ${gamemode} | ${champion.originalName}`);
+            MenuService.log(`[Runes]`, `Gathering build from ${provider.pluginId} - ${gamemode} | ${champion.originalName}`);
 
             provider
                 .getBuild(gamemode, champion)
                 .then((build) => {
                     if (SettingsService.getSetting('autorunes-enabled')) {
-                        MenuService.log(`[Runes] Updating runes..`);
+                        MenuService.log(`[Runes]`, `Updating runes..`);
 
-                        if (!build.perks) MenuService.log(`[Runes] Tried to update runes, but could not find them on provider!`);
+                        if (!build.perks) MenuService.log(`[ERROR]`, `Tried to update runes, but could not find them on provider!`);
                         else {
                             PerkAPI.getPages()
                                 .then((pages) => {
                                     PerkAPI.setPerks(pages[0], build.perks, buildName)
                                         .then(() => {
-                                            MenuService.log('[Runes] Updated runes!');
+                                            MenuService.log(`[Runes]`, 'Updated runes!');
                                         })
-                                        .catch((err) => MenuService.log(err));
+                                        .catch((err) => MenuService.log(`[ERROR]`, err));
                                 })
-                                .catch((err) => MenuService.log(err));
+                                .catch((err) => MenuService.log(`[ERROR]`, err));
                         }
                     }
 
                     /// ----
                     if (SettingsService.getSetting('autoitems-enabled')) {
-                        if (build.items.length <= 0) MenuService.log(`[Runes] Tried to update items, but could not find them on provider!`);
+                        if (build.items.length <= 0)
+                            MenuService.log(`[Runes]`, `Tried to update items, but could not find them on provider!`);
                         else {
-                            MenuService.log(`[Runes] Updating items..`);
+                            MenuService.log(`[Runes]`, `Updating items..`);
                             MapAPI.getMaps()
                                 .then((maps) => {
                                     const itemSet: ItemSet = {
@@ -120,26 +120,33 @@ const main = async () => {
 
                                     ItemAPI.updateItemSet(itemSet)
                                         .then(() => {
-                                            MenuService.log('[Runes] Updated items!');
+                                            MenuService.log(`[Runes]`, 'Updated items!');
                                         })
-                                        .catch((err) => MenuService.log(err));
+                                        .catch((err) => MenuService.log(`[ERROR]`, err));
                                 })
-                                .catch((err) => MenuService.log(err));
+                                .catch((err) => MenuService.log(`[ERROR]`, err));
                         }
                     }
                 })
-                .catch((err) => MenuService.log(err));
+                .catch((err) => MenuService.log(`[ERROR]`, err));
         }
     });
 
     SocketAPI.event.on('onGamemodeUpdate', (data: Gamemode) => {
         gamemode = data;
     });
+
+    SocketAPI.event.on('onPlayerRoleUpdate', (data: Role) => {
+        role = data;
+    });
 };
 
-process.on('unhandledRejection', (reason: any) => console.warn(`!!FATAL!! ${reason}`));
+process.on('unhandledRejection', (reason: any) => {
+    MenuService.customLog(`{#e74c3c-fg}ERROR{/}: ${reason}`);
+});
+
 process.on('SIGTERM', () => {
     CredentialsAPI.shutdown();
 });
 
-main().catch((err) => console.warn(`!!FATAL!! ${err}`));
+main().catch((err) => MenuService.customLog(`{#e74c3c-fg}ERROR{/}: ${err}`));
