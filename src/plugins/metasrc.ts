@@ -19,6 +19,7 @@ import { Champion } from '../types/champion';
 import { PerkData } from '../types/perks';
 import { Build } from '../types/build';
 import { ItemBlock } from '../types/itemSet';
+import { Role } from '../types/role';
 
 import { PerkAPI } from '../api/perk';
 
@@ -35,7 +36,7 @@ export class MetaSRC implements RunePlugin {
         this.cache = new CacheService(this.pluginId);
     }
 
-    public async getBuild(gamemode: Gamemode, champion: Champion): Promise<Build> {
+    public async getBuild(gamemode: Gamemode, champion: Champion, role: Role | null): Promise<Build> {
         // Check cache first
         const cachedPerks = await this.cache.readCache(gamemode, champion);
         if (cachedPerks) {
@@ -45,8 +46,7 @@ export class MetaSRC implements RunePlugin {
         // ---
 
         const build: Build = { perks: null, items: [] };
-
-        return fetch(`${this.WEBSITE}/${this.mapGamemode(gamemode)}/champion/${this.mapChampion(champion)}`, {
+        return fetch(`${this.WEBSITE}/${this.mapGamemode(gamemode)}/champion/${this.mapChampion(champion)}/${role ? role : ''}`, {
             method: 'GET',
             redirect: 'follow',
             follow: 10,
@@ -213,6 +213,11 @@ export class MetaSRC implements RunePlugin {
         });
 
         return block;
+    }
+
+    public mapRole(role: Role): string {
+        if (role === 'bottom') return 'adc';
+        return role;
     }
 
     public mapChampion(champion: Champion): string {

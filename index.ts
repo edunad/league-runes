@@ -29,15 +29,16 @@ const plugins: { [id: string]: RunePlugin } = {
 
 const main = async () => {
     // Startup menu
-    MenuService.init();
-    MenuService.log(`[Rune] Connecting to league client...`);
+    console.log(`[Rune] Connecting to league client...`);
 
     await SettingsService.init();
     await CacheService.init();
     await CredentialsAPI.init();
     await SocketAPI.init();
 
-    MenuService.log(`[Rune] SUCCESS`);
+    console.log(`[Rune] SUCCESS`);
+
+    MenuService.init();
 
     /*const provider = plugins['metasrc'];
     const runes = await provider.getBuild('aram', {
@@ -75,10 +76,10 @@ const main = async () => {
             const provider = plugins[SettingsService.getSetting('provider')];
             const buildName = `[${gamemode}] ${champion.originalName.toUpperCase()}`;
 
-            MenuService.log(`[Runes] Gathering build from ${provider.pluginId} - ${gamemode} | ${champion.originalName}`);
+            MenuService.log(`[Runes] Gathering build from ${provider.pluginId} - ${gamemode} | ${champion.originalName} - ${role}`);
 
             provider
-                .getBuild(gamemode, champion)
+                .getBuild(gamemode, champion, role)
                 .then((build) => {
                     if (SettingsService.getSetting('autorunes-enabled')) {
                         MenuService.log(`[Runes] Updating runes..`);

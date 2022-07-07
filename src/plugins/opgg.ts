@@ -13,6 +13,7 @@ import { Champion } from '../types/champion';
 import { PerkData } from '../types/perks';
 import { Build } from '../types/build';
 import { ItemBlock } from '../types/itemSet';
+import { Role } from '../types/role';
 
 import { CacheService } from '../services/cache';
 import { MenuService } from '../services/menu';
@@ -28,7 +29,7 @@ export class OPGG implements RunePlugin {
         this.cache = new CacheService(this.pluginId);
     }
 
-    public async getBuild(gamemode: Gamemode, champion: Champion): Promise<Build> {
+    public async getBuild(gamemode: Gamemode, champion: Champion, role: Role | null): Promise<Build> {
         // Check cache first
         const cachedPerks = await this.cache.readCache(gamemode, champion);
         if (cachedPerks) {
@@ -41,7 +42,7 @@ export class OPGG implements RunePlugin {
         const fixedChampion = this.mapChampion(champion);
 
         let website = `${this.WEBSITE}`;
-        if (this.fixedGamemode === 'classic') website += `/champions/${fixedChampion}`;
+        if (this.fixedGamemode === 'classic') website += `/champions/${fixedChampion}/${role ? `${role}/build` : ''}`;
         else website += `/modes/${this.fixedGamemode}/${fixedChampion}`;
 
         const build: Build = { perks: null, items: [] };
@@ -121,6 +122,10 @@ export class OPGG implements RunePlugin {
 
     public async getItems($: any): Promise<ItemBlock[]> {
         return null;
+    }
+
+    public mapRole(role: Role): string {
+        return role;
     }
 
     public mapChampion(champion: Champion): string {

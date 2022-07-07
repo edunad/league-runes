@@ -13,6 +13,7 @@ import { Champion } from '../types/champion';
 import { PerkData } from '../types/perks';
 import { Build } from '../types/build';
 import { ItemBlock } from '../types/itemSet';
+import { Role } from '../types/role';
 
 import { CacheService } from '../services/cache';
 import { MenuService } from '../services/menu';
@@ -29,7 +30,7 @@ export class UGG implements RunePlugin {
         this.cache = new CacheService(this.pluginId);
     }
 
-    public async getBuild(gamemode: Gamemode, champion: Champion): Promise<Build> {
+    public async getBuild(gamemode: Gamemode, champion: Champion, role: Role | null): Promise<Build> {
         // Check cache first
         const cachedPerks = await this.cache.readCache(gamemode, champion);
         if (cachedPerks) {
@@ -40,15 +41,18 @@ export class UGG implements RunePlugin {
 
         const build: Build = { perks: null, items: [] };
 
-        return fetch(`${this.WEBSITE}/lol/champions/${this.mapChampion(champion)}${this.mapGamemode(gamemode)}/build`, {
-            method: 'GET',
-            redirect: 'follow',
-            follow: 10,
-            headers: {
-                'User-Agent': getAgent(),
-                'Content-Type': 'application/text',
+        return fetch(
+            `${this.WEBSITE}/lol/champions/${this.mapChampion(champion)}${this.mapGamemode(gamemode)}/build${role ? `?role=${role}` : ''}`,
+            {
+                method: 'GET',
+                redirect: 'follow',
+                follow: 10,
+                headers: {
+                    'User-Agent': getAgent(),
+                    'Content-Type': 'application/text',
+                },
             },
-        })
+        )
             .then((resp) => {
                 if (!resp.ok) throw new Error(`Invalid response : ${resp.status}`);
                 return resp.text();
@@ -119,6 +123,11 @@ export class UGG implements RunePlugin {
         const blocks: ItemBlock[] = [];
 
         return blocks;
+    }
+
+    public mapRole(role: Role): string {
+        if (role === 'bottom') return 'adc';
+        return role;
     }
 
     public mapChampion(champion: Champion): string {
