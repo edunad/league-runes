@@ -33,7 +33,7 @@ export class UGG implements RunePlugin {
         // Check cache first
         const cachedPerks = await this.cache.readCache(gamemode, champion);
         if (cachedPerks) {
-            MenuService.log(`[U.op] Using cached data: ${gamemode} - ${champion.originalName}`);
+            MenuService.log(`[U.op]`, `Using cached data: ${gamemode} - ${champion.originalName}`);
             return cachedPerks.build;
         }
         // ---
@@ -50,21 +50,21 @@ export class UGG implements RunePlugin {
             },
         })
             .then((resp) => {
-                if (!resp.ok) throw new Error(`[U.op] Invalid response : ${resp.status}`);
+                if (!resp.ok) throw new Error(`Invalid response : ${resp.status}`);
                 return resp.text();
             })
             .then((data) => {
                 return load(data);
             })
             .then(async ($) => {
-                if ($ == null) return Promise.reject('[U.op] Failed to get champion');
+                if ($ == null) return Promise.reject('Failed to get champion');
 
                 const runes = await this.getRunes($);
                 if (!runes.primaryStyleId || !runes.subStyleId || runes.selectedPerkIds.length <= 0)
-                    throw new Error(`[U.op] No runes found for ${champion}`);
+                    throw new Error(`No runes found for ${champion}`);
 
                 const items = await this.getItems($);
-                if (!items) throw new Error(`[U.op] No items found for ${champion}`);
+                if (!items) throw new Error(`No items found for ${champion}`);
 
                 build.perks = runes;
                 build.items = items;
@@ -84,14 +84,14 @@ export class UGG implements RunePlugin {
         };
 
         const runeImgs = $(`.rune-trees-container-2:first-of-type img`);
-        if (!runeImgs) throw new Error(`[U.op] Failed to get runes`);
+        if (!runeImgs) throw new Error(`Failed to get runes`);
 
         runeImgs.each((i, r) => {
             const parentClass = $(r).parent().attr('class');
             if (parentClass.indexOf('-inactive') !== -1) return;
 
             const runeId = $(r).attr('src');
-            if (!runeId) throw new Error(`[U.op] Failed to fetch rune index {${i}}`);
+            if (!runeId) throw new Error(`Failed to fetch rune index {${i}}`);
 
             const isSpecial = runeId.indexOf('assets/lol/runes') !== -1;
             const picId = basename(runeId).replace('.webp', '.png').toLocaleLowerCase();
@@ -105,7 +105,7 @@ export class UGG implements RunePlugin {
                 return;
             }
 
-            if (!perkMap[picId]) throw new Error(`[U.op] Failed to map rune {${picId}}`);
+            if (!perkMap[picId]) throw new Error(`Failed to map rune {${picId}}`);
             runes.selectedPerkIds.push(perkMap[picId]);
         });
 
@@ -113,8 +113,8 @@ export class UGG implements RunePlugin {
     }
 
     public async getItems($: any): Promise<ItemBlock[]> {
-        const containers = $('.tooltip-container');
-        if (!containers) throw new Error(`[U.op] Failed to get items`);
+        const containers = $('.recommended-build_items:first-of-type');
+        if (!containers) throw new Error(`Failed to get items`);
 
         const blocks: ItemBlock[] = [];
 

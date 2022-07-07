@@ -1,5 +1,4 @@
 import { createHttp1Request } from 'league-connect';
-import { v4 as uuidv4 } from 'uuid';
 
 import { CredentialsAPI } from './credentials';
 
@@ -60,7 +59,7 @@ export class ItemAPI {
             .then((resp) => {
                 return resp.ok;
             })
-            .catch((err) => {
+            .catch(() => {
                 return false;
             });
     }
@@ -70,15 +69,15 @@ export class ItemAPI {
         const user = CredentialsAPI.getUser();
 
         if (!builds || !builds.itemSets || builds.itemSets.length <= 0) {
-            MenuService.log(`[ItemAPI] No item build found, creating one..`);
+            MenuService.log(`[ItemAPI]`, `No item build found, creating one..`);
 
             await this.createItemPage();
 
             builds = await this.getItemBuilds();
-            if (!builds || !builds.itemSets || builds.itemSets.length <= 0) throw new Error('[ItemAPI] Failed to create a item build page');
+            if (!builds || !builds.itemSets || builds.itemSets.length <= 0) throw new Error('Failed to create a item build page');
         }
 
-        MenuService.log(`[ItemAPI] Updating build index ${index}..`);
+        MenuService.log(`[ItemAPI]`, `Updating build index ${index}..`);
         set.uid = builds.itemSets[index].uid; // Hi-jack the selected index build.
 
         const newBuild: ItemBuild = {
@@ -98,7 +97,7 @@ export class ItemAPI {
             .then((resp) => {
                 return resp.ok;
             })
-            .catch((err) => {
+            .catch(() => {
                 return false;
             });
     }

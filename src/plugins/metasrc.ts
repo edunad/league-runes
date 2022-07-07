@@ -39,7 +39,7 @@ export class MetaSRC implements RunePlugin {
         // Check cache first
         const cachedPerks = await this.cache.readCache(gamemode, champion);
         if (cachedPerks) {
-            MenuService.log(`[MetaSRC] Using cached data: ${gamemode} - ${champion.originalName}`);
+            MenuService.log(`[MetaSRC]`, `Using cached data: ${gamemode} - ${champion.originalName}`);
             return cachedPerks.build;
         }
         // ---
@@ -56,21 +56,21 @@ export class MetaSRC implements RunePlugin {
             },
         })
             .then((resp) => {
-                if (!resp.ok) throw new Error(`[MetaSRC] Invalid response : ${resp.status}`);
+                if (!resp.ok) throw new Error(`Invalid response : ${resp.status}`);
                 return resp.text();
             })
             .then((data) => {
                 return load(data);
             })
             .then(async ($) => {
-                if ($ == null) return Promise.reject(`[MetaSRC] Failed to get champion {${champion.originalName}} data`);
+                if ($ == null) return Promise.reject(`Failed to get champion {${champion.originalName}} data`);
 
                 const runes = await this.getRunes($);
                 if (!runes.primaryStyleId || !runes.subStyleId || runes.selectedPerkIds.length <= 0)
-                    throw new Error(`[MetaSRC] No runes found for ${champion.originalName}`);
+                    throw new Error(`No runes found for ${champion.originalName}`);
 
                 const items = await this.getItems($);
-                if (!items || items.length <= 0) throw new Error(`[MetaSRC] No items found for ${champion.originalName}`);
+                if (!items || items.length <= 0) throw new Error(`No items found for ${champion.originalName}`);
 
                 build.perks = runes;
                 build.items = items;
@@ -90,11 +90,11 @@ export class MetaSRC implements RunePlugin {
         };
 
         const runeContainer = $('#perks > div:last-child > .content-selected svg > image');
-        if (!runeContainer) throw new Error(`[MetaSRC] Failed to get runes`);
+        if (!runeContainer) throw new Error(`Failed to get runes`);
 
         runeContainer.each((i, r) => {
             const runeId = $(r).attr('data-xlink-href');
-            if (!runeId) throw new Error(`[MetaSRC] Failed to fetch rune index {${i}}`);
+            if (!runeId) throw new Error(`Failed to fetch rune index {${i}}`);
 
             const picId = basename(runeId).toLocaleLowerCase();
             const isSpecial = runeId.indexOf('metasrc.com') !== -1;
@@ -108,7 +108,7 @@ export class MetaSRC implements RunePlugin {
                 return;
             }
 
-            if (!perkMap[picId]) throw new Error(`[MetaSRC] Failed to map rune {${picId}}`);
+            if (!perkMap[picId]) throw new Error(`Failed to map rune {${picId}}`);
             runes.selectedPerkIds.push(perkMap[picId]);
         });
 
@@ -117,17 +117,17 @@ export class MetaSRC implements RunePlugin {
 
     public async getItems($: any): Promise<ItemBlock[]> {
         const containers = $('.tooltip-container');
-        if (!containers) throw new Error(`[MetaSRC] Failed to get items`);
+        if (!containers) throw new Error(`Failed to get items`);
 
         const blocks: ItemBlock[] = [];
 
         const startingContainer = $(containers[1]).children(`div:first-of-type`);
-        if (!startingContainer) throw new Error(`[MetaSRC] Failed to get items`);
+        if (!startingContainer) throw new Error(`Failed to get items`);
 
         blocks.push(this.getStartingItems($, startingContainer)); // Add starting items
 
         const restContainer = $(containers[1]).children(`div:nth-child(2)`);
-        if (!restContainer) throw new Error(`[MetaSRC] Failed to get items`);
+        if (!restContainer) throw new Error(`Failed to get items`);
 
         blocks.push(...this.getNormalItems($, restContainer)); // Add remaining items
 

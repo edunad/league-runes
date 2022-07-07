@@ -32,7 +32,7 @@ export class OPGG implements RunePlugin {
         // Check cache first
         const cachedPerks = await this.cache.readCache(gamemode, champion);
         if (cachedPerks) {
-            MenuService.log(`[op.GG] Using cached data: ${gamemode} - ${champion.originalName}`);
+            MenuService.log(`[op.GG]`, `Using cached data: ${gamemode} - ${champion.originalName}`);
             return cachedPerks.build;
         }
         // ---
@@ -56,21 +56,21 @@ export class OPGG implements RunePlugin {
             },
         })
             .then((resp) => {
-                if (!resp.ok) throw new Error(`[op.GG] Invalid response : ${resp.status}`);
+                if (!resp.ok) throw new Error(`Invalid response : ${resp.status}`);
                 return resp.text();
             })
             .then((data) => {
                 return load(data);
             })
             .then(async ($) => {
-                if ($ == null) return Promise.reject('[op.GG] Failed to get champion');
+                if ($ == null) return Promise.reject('Failed to get champion');
 
                 const runes = await this.getRunes($);
                 if (!runes.primaryStyleId || !runes.subStyleId || runes.selectedPerkIds.length <= 0)
-                    throw new Error(`[op.GG] No runes found for ${champion}`);
+                    throw new Error(`No runes found for ${champion}`);
 
                 const items = await this.getItems($);
-                if (!items) throw new Error(`[op.GG] No items found for ${champion}`);
+                if (!items) throw new Error(`No items found for ${champion}`);
 
                 build.perks = runes;
                 build.items = items;
@@ -94,11 +94,11 @@ export class OPGG implements RunePlugin {
                 : 'tr:first-of-type td:first-of-type img';
 
         const runeImgs = $(idSearch);
-        if (!runeImgs) throw new Error(`[GG.op] Failed to get runes`);
+        if (!runeImgs) throw new Error(`Failed to get runes`);
 
         runeImgs.each((i, r) => {
             const runeId = $(r).attr('src');
-            if (!runeId) throw new Error(`[GG.op] Failed to fetch rune index {${i}}`);
+            if (!runeId) throw new Error(`Failed to fetch rune index {${i}}`);
             if (runeId.indexOf('e_grayscale') !== -1) return; // Ignore grayed out pics
 
             const isSpecial = runeId.indexOf('perkStyle') !== -1;

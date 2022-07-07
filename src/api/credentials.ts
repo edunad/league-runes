@@ -35,7 +35,7 @@ export class CredentialsAPI {
         );
     }
 
-    public static getAccount(): Promise<boolean> {
+    private static getAccount(): Promise<boolean> {
         return createHttp1Request(
             {
                 method: 'GET',
