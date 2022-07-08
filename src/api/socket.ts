@@ -11,6 +11,8 @@ export class SocketAPI {
     public static ws: LeagueWebSocket;
     public static event: EventEmitter;
 
+    private static prevPhase: string;
+
     public static async init(): Promise<boolean> {
         this.event = new EventEmitter();
         this.ws = await createWebSocketConnection({
@@ -42,21 +44,27 @@ export class SocketAPI {
 
         this.ws.subscribe('/lol-champ-select/v1/session', (data, event: any) => {
             const current = CredentialsAPI.getUser();
-            if (event.eventType !== 'Update') return;
+            if (event.eventType !== 'Update' && data.timer.phase !== '') return;
 
             const player = data.myTeam.find((member) => member.summonerId === current.summonerId);
             if (!player) return;
 
             let role: Role = null;
-            if (!player.assignedPosition) {
-                if (player.spell1Id === 11 || player.spell2Id === 11) {
+            if (player.assignedPosition) {
+                /*if (player.spell1Id === 11 || player.spell2Id === 11) { // 11 = SMITE
                     role = 'jungle';
-                }
-            } else {
+                }*/
+
                 role = player.assignedPosition;
             }
 
             this.event.emit('onPlayerRoleUpdate', role);
+        });
+
+        this.ws.subscribe('/lol-champ-select/v1/session', (data, event: any) => {
+            if (this.prevPhase === data.timer.phase) return;
+            this.prevPhase = data.timer.phase;
+            this.event.emit('onLobbyPhaseChange', this.prevPhase);
         });
 
         this.ws.subscribe('/lol-gameflow/v1/session', (data, event: any) => {
