@@ -1,0 +1,57 @@
+diff --git a/lib/prompts/checkbox.js b/lib/prompts/checkbox.js
+index d192354827439937c0eb643c0cdee1818a2dfb8a..735bba26bc6b203bf7b9673f9e8e3d99c99e7e42 100644
+--- a/lib/prompts/checkbox.js
++++ b/lib/prompts/checkbox.js
+@@ -189,6 +189,8 @@ export default class CheckboxPrompt extends Base {
+   onSpaceKey() {
+     this.toggleChoice(this.pointer);
+     this.render();
++
++    this.opt.onEvent && this.opt.onEvent('onSpaceKey', this.getCurrentValue());
+   }
+ 
+   onAllKey() {
+diff --git a/lib/utils/readline.js b/lib/utils/readline.js
+index a03e3c65575f8d247583bf9b52606b586ef26770..50422dd348601f36720156e76a7073dd7c64c369 100644
+--- a/lib/utils/readline.js
++++ b/lib/utils/readline.js
+@@ -7,7 +7,8 @@ import ansiEscapes from 'ansi-escapes';
+  */
+ 
+ export const left = function (rl, x) {
+-  rl.output.write(ansiEscapes.cursorBackward(x));
++  //rl.output.write(ansiEscapes.cursorBackward(x));
++  process.stdout.moveCursor(x);
+ };
+ 
+ /**
+@@ -17,7 +18,8 @@ export const left = function (rl, x) {
+  */
+ 
+ export const right = function (rl, x) {
+-  rl.output.write(ansiEscapes.cursorForward(x));
++  //rl.output.write(ansiEscapes.cursorForward(x));
++  process.stdout.moveCursor(x);
+ };
+ 
+ /**
+@@ -27,7 +29,8 @@ export const right = function (rl, x) {
+  */
+ 
+ export const up = function (rl, x) {
+-  rl.output.write(ansiEscapes.cursorUp(x));
++  //rl.output.write(ansiEscapes.cursorUp(x));
++  process.stdout.moveCursor(0, x);
+ };
+ 
+ /**
+@@ -37,7 +40,8 @@ export const up = function (rl, x) {
+  */
+ 
+ export const down = function (rl, x) {
+-  rl.output.write(ansiEscapes.cursorDown(x));
++  //rl.output.write(ansiEscapes.cursorDown(x));
++  process.stdout.moveCursor(0, x);
+ };
+ 
+ /**
