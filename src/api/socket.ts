@@ -50,7 +50,11 @@ export class SocketAPI {
             if (!player) return;
 
             let role: Role = null;
-            if (player.assignedPosition) role = player.assignedPosition;
+            let gameRole = player.assignedPosition;
+            if (gameRole) {
+                if (gameRole === 'utility') gameRole = 'support';
+                role = gameRole;
+            }
 
             this.event.emit('onPlayerRoleUpdate', role);
         });
