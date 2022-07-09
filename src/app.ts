@@ -83,12 +83,14 @@ export class App {
         const buildName = `[${this.gamemode}]${this.role ? `[${this.role}]` : ''} ${this.champion.originalName.toUpperCase()}`;
 
         provider.getBuild(this.gamemode, this.champion, this.role).then((build) => {
-            if (SettingsService.getSetting('autorunes-enabled')) this.autoRunesCommand(buildName, build.perks);
-            if (SettingsService.getSetting('autoitems-enabled')) this.autoItemsCommand(buildName, build.items);
+            this.autoRunesCommand(buildName, build.perks);
+            this.autoItemsCommand(buildName, build.items);
         });
     }
 
     private static autoRunesCommand(buildName: string, perks: PerkData): void {
+        if (!SettingsService.getSetting('autorunes-enabled')) return;
+
         if (!perks) {
             MenuService.log(`[ERROR] Tried to update runes, but could not find them on provider!`);
             return;
@@ -107,6 +109,8 @@ export class App {
     }
 
     private static autoItemsCommand(buildName: string, items: ItemBlock[]): void {
+        if (!SettingsService.getSetting('autoitems-enabled')) return;
+
         if (!items || !items.length) {
             MenuService.log(`[ERROR] Tried to update items, but could not find them on provider!`);
             return;

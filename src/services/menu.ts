@@ -8,18 +8,18 @@ import { Role } from '../types/role';
 import { SettingsService } from './settings';
 
 export class MenuService {
+    private static readonly MAX_LOG: number = 6;
+
     private static championAvatar: string;
     private static logger: string[];
 
     private static mainmenu: any;
     private static roleMenu: any;
-    private static bar: inquirer.ui.BottomBar;
 
     public static event: EventEmitter;
 
     public static init(): void {
         this.event = new EventEmitter();
-        this.bar = new inquirer.ui.BottomBar();
         this.logger = [];
 
         this.printMenu();
@@ -30,7 +30,7 @@ export class MenuService {
     }
 
     public static log(text: string): void {
-        if (this.logger.length > 4) this.logger.shift();
+        if (this.logger.length >= this.MAX_LOG) this.logger.shift();
         this.logger.push(text);
 
         this.printLog();
@@ -42,10 +42,13 @@ export class MenuService {
     }
 
     private static printLog(): void {
+        process.stdout.cursorTo(0, 10);
+        process.stdout.clearScreenDown();
         this.logger.forEach((log, indx) => {
-            if (indx > 4) return;
-            this.bar.log.write(log);
+            if (indx >= this.MAX_LOG) return;
+            console.log(log);
         });
+        process.stdout.cursorTo(0, 0);
     }
 
     public static setChampionAvatar(champion: string): void {
@@ -56,6 +59,7 @@ export class MenuService {
         // Cancel both UI's
         if (this.mainmenu) {
             this.mainmenu.ui.activePrompt.close();
+            this.mainmenu.ui.rl.output.end();
             this.mainmenu.ui.rl.removeAllListeners();
 
             this.mainmenu = null;
@@ -63,6 +67,7 @@ export class MenuService {
 
         if (this.roleMenu) {
             this.roleMenu.ui.activePrompt.close();
+            this.roleMenu.ui.rl.output.end();
             this.roleMenu.ui.rl.removeAllListeners();
 
             this.roleMenu = null;
@@ -78,7 +83,7 @@ export class MenuService {
         console.log(`------------------ CHAMPION SELECT ------------------`);
         this.roleMenu = inquirer.prompt([
             {
-                type: 'rawlist',
+                type: 'list',
                 message: `Override role`,
                 name: 'role',
                 choices: [
@@ -114,10 +119,10 @@ export class MenuService {
         this.roleMenu.then((data) => {
             if (!data) return;
 
-            this.roleMenu = null;
-            this.printRole();
-
             this.event.emit('onRoleChange', data.role as Role);
+            this.roleMenu = null;
+            process.stdout.cursorTo(0, 2);
+            this.printRole();
         });
     }
 
@@ -157,6 +162,12 @@ export class MenuService {
                         checked: SettingsService.getSetting('autoitems-enabled'),
                     },
                 ],
+                onEvent: (key, data) => {
+                    SettingsService.setSetting('skin-enabled', data.indexOf('skin-enabled') !== -1, false);
+                    SettingsService.setSetting('skin-chroma-enabled', data.indexOf('skin-chroma-enabled') !== -1, false);
+                    SettingsService.setSetting('autorunes-enabled', data.indexOf('autorunes-enabled') !== -1, false);
+                    SettingsService.setSetting('autoitems-enabled', data.indexOf('autoitems-enabled') !== -1, true);
+                },
             },
             {
                 type: 'list',
@@ -190,7 +201,6 @@ export class MenuService {
             SettingsService.setSetting('provider', data.providers);
 
             this.mainmenu = null;
-            this.printMenu();
         });
     }
 }
