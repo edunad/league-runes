@@ -25,6 +25,8 @@ compile({
     build: true,
 
     ico: './icon.ico',
+    title: 'Rune',
+
     rc: {
         CompanyName: 'FailCake',
         PRODUCTVERSION: packg.version,

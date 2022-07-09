@@ -1,4 +1,7 @@
 // rollup.config.js
+
+import { join } from 'path';
+
 import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import json from '@rollup/plugin-json';
@@ -20,17 +23,21 @@ export default {
     },
     plugins: [
         del({ targets: ['.output/'] }),
-        typescript(),
-        commonjs(),
 
+        typescript({
+            tsconfig: join(__dirname, `tsconfig.json`),
+        }),
+
+        commonjs(),
         nodeResolve({ exportsConditions: ['node'], preferBuiltins: true, custom: { 'node-resolve': { isRequire: true } } }),
 
         json(),
 
+        // Because chalk is retarted and won't do a proper "browser" check
         copy({
-            targets: [{ src: './.patches/chalk/browser.js', dest: './.output/node_modules/chalk/source/vendor/supports-color' }],
+            targets: [{ src: './.patches/chalk/browser.js', dest: './node_modules/chalk/source/vendor/supports-color' }],
             verbose: true,
-            hook: 'closeBundle',
+            hook: 'buildStart',
         }),
     ],
 };
