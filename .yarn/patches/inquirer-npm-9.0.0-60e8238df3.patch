@@ -1,8 +1,19 @@
 diff --git a/lib/prompts/checkbox.js b/lib/prompts/checkbox.js
-index d192354827439937c0eb643c0cdee1818a2dfb8a..735bba26bc6b203bf7b9673f9e8e3d99c99e7e42 100644
+index d192354827439937c0eb643c0cdee1818a2dfb8a..f68f097e084f3cbad07a6bb56df4355876ae1378 100644
 --- a/lib/prompts/checkbox.js
 +++ b/lib/prompts/checkbox.js
-@@ -189,6 +189,8 @@ export default class CheckboxPrompt extends Base {
+@@ -32,6 +32,10 @@ export default class CheckboxPrompt extends Base {
+     // Make sure no default is set (so it won't be printed)
+     this.opt.default = null;
+ 
++    global.__forceCheckboxRender = () => {
++      this.render();
++    }
++
+     const shouldLoop = this.opt.loop === undefined ? true : this.opt.loop;
+     this.paginator = new Paginator(this.screen, { isInfinite: shouldLoop });
+   }
+@@ -189,6 +193,8 @@ export default class CheckboxPrompt extends Base {
    onSpaceKey() {
      this.toggleChoice(this.pointer);
      this.render();
@@ -11,6 +22,21 @@ index d192354827439937c0eb643c0cdee1818a2dfb8a..735bba26bc6b203bf7b9673f9e8e3d99
    }
  
    onAllKey() {
+diff --git a/lib/prompts/list.js b/lib/prompts/list.js
+index 805ddf34b5ba320d90f0c0b5a0f69aec3b1a85c6..61c5b9efb6ec1196b1ddd0c8d8a31c868ea63c6e 100644
+--- a/lib/prompts/list.js
++++ b/lib/prompts/list.js
+@@ -25,6 +25,10 @@ export default class ListPrompt extends Base {
+ 
+     const def = this.opt.default;
+ 
++    global.__forceListRender = () => {
++      this.render();
++    }
++
+     // If def is a Number, then use as index. Otherwise, check for value.
+     if (typeof def === 'number' && def >= 0 && def < this.opt.choices.realLength) {
+       this.selected = def;
 diff --git a/lib/utils/readline.js b/lib/utils/readline.js
 index a03e3c65575f8d247583bf9b52606b586ef26770..50422dd348601f36720156e76a7073dd7c64c369 100644
 --- a/lib/utils/readline.js

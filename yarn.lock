@@ -2970,7 +2970,7 @@ __metadata:
 
 "inquirer@patch:inquirer@npm:9.0.0#.yarn/patches/inquirer-npm-9.0.0-60e8238df3.patch::locator=rune%40workspace%3A.":
   version: 9.0.0
-  resolution: "inquirer@patch:inquirer@npm%3A9.0.0#.yarn/patches/inquirer-npm-9.0.0-60e8238df3.patch::version=9.0.0&hash=d7c797&locator=rune%40workspace%3A."
+  resolution: "inquirer@patch:inquirer@npm%3A9.0.0#.yarn/patches/inquirer-npm-9.0.0-60e8238df3.patch::version=9.0.0&hash=14f444&locator=rune%40workspace%3A."
   dependencies:
     ansi-escapes: ^5.0.0
     chalk: ^5.0.1
@@ -2987,7 +2987,7 @@ __metadata:
     strip-ansi: ^7.0.1
     through: ^2.3.6
     wrap-ansi: ^8.0.1
-  checksum: cc3a9b41072b68a0fd5e8ca108a711e6322b9a493b96ffee050833534c04b43dd7abe4663030c5a92aecfe042c823cf6a9903cbaccd93a514761cf2d09b0bc3d
+  checksum: 085f841897a6952ff47ffc513ca0cc67b53237aadcd5dff2a4fba5cefb13167e98a16392e95a8e99e3feef1c0f7633b42cc2ed6eba2aef7a65172fe8f49475a4
   languageName: node
   linkType: hard
 
