@@ -3015,6 +3015,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"inquirer@patch:inquirer@npm:9.0.0#.yarn/patches/inquirer-npm-9.0.0-60e8238df3.patch::locator=rune%40workspace%3A.":
+  version: 9.0.0
+  resolution: "inquirer@patch:inquirer@npm%3A9.0.0#.yarn/patches/inquirer-npm-9.0.0-60e8238df3.patch::version=9.0.0&hash=d7c797&locator=rune%40workspace%3A."
+  dependencies:
+    ansi-escapes: ^5.0.0
+    chalk: ^5.0.1
+    cli-cursor: ^4.0.0
+    cli-width: ^4.0.0
+    external-editor: ^3.0.3
+    figures: ^4.0.1
+    lodash: ^4.17.21
+    mute-stream: 0.0.8
+    ora: ^6.1.0
+    run-async: ^2.4.0
+    rxjs: ^7.5.5
+    string-width: ^5.1.2
+    strip-ansi: ^7.0.1
+    through: ^2.3.6
+    wrap-ansi: ^8.0.1
+  checksum: cc3a9b41072b68a0fd5e8ca108a711e6322b9a493b96ffee050833534c04b43dd7abe4663030c5a92aecfe042c823cf6a9903cbaccd93a514761cf2d09b0bc3d
+  languageName: node
+  linkType: hard
+
 "into-stream@npm:^3.1.0":
   version: 3.1.0
   resolution: "into-stream@npm:3.1.0"
