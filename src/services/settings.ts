@@ -22,7 +22,7 @@ export class SettingsService {
     }
 
     public static async hasSettings(): Promise<boolean> {
-        return new Promise<boolean>((resolve, reject) => {
+        return new Promise<boolean>((resolve) => {
             stat(`./settings.json`, (err) => {
                 return resolve(!err ? true : false);
             });

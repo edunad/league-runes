@@ -1,6 +1,7 @@
 node_modules/
 .bin/
-libs/
-raw/
-*.js
-*.mjs
+.cache/
+.output/
+.patches/
+.yarn/
+.cert/

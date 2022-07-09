@@ -5,7 +5,8 @@ import { PerkData } from '../types/perks';
 import { CredentialsAPI } from './credentials';
 
 export interface PerkMap {
-    [img: string]: number;
+    byName: { [img: string]: number };
+    byPic: { [img: string]: number };
 }
 
 export interface RunePage {
@@ -38,10 +39,14 @@ export class PerkAPI {
         )
             .then((val) => val.json())
             .then((json) => {
-                const perkMap: PerkMap = {};
+                const perkMap: PerkMap = {
+                    byName: {},
+                    byPic: {},
+                };
+
                 Object.values(json).forEach((perk: any) => {
-                    const iconId: string = basename(perk.iconPath).toLowerCase();
-                    perkMap[iconId] = perk.id;
+                    perkMap.byName[perk.name.toLowerCase()] = perk.id;
+                    perkMap.byPic[basename(perk.iconPath).toLowerCase().replace('.png', '')] = perk.id;
                 });
 
                 return perkMap;

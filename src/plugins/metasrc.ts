@@ -21,10 +21,7 @@ import { Build } from '../types/build';
 import { ItemBlock } from '../types/itemSet';
 import { Role } from '../types/role';
 
-import { PerkAPI } from '../api/perk';
-
 import { CacheService } from '../services/cache';
-import { MenuService } from '../services/menu';
 
 export class MetaSRC implements RunePlugin {
     public readonly pluginId: string = 'metasrc';
@@ -38,11 +35,8 @@ export class MetaSRC implements RunePlugin {
 
     public async getBuild(gamemode: Gamemode, champion: Champion, role: Role | null): Promise<Build> {
         // Check cache first
-        const cachedPerks = await this.cache.readCache(gamemode, champion);
-        if (cachedPerks) {
-            MenuService.log(`[MetaSRC] Using cached data: ${gamemode} - ${champion.originalName}`);
-            return cachedPerks.build;
-        }
+        const cachedPerks = await this.cache.readCache(gamemode, champion, role);
+        if (cachedPerks) return cachedPerks.build;
         // ---
 
         const build: Build = { perks: null, items: [] };
@@ -78,38 +72,36 @@ export class MetaSRC implements RunePlugin {
                 return build;
             })
             .then((build) => {
-                this.cache.writeCache(gamemode, champion, build);
+                this.cache.writeCache(gamemode, champion, role, build);
                 return build;
             });
     }
 
     public async getRunes($: any): Promise<PerkData> {
-        const perkMap = await PerkAPI.getPerks();
         const runes: PerkData = {
             selectedPerkIds: [],
         };
 
-        const runeContainer = $('#perks > div:last-child > .content-selected svg > image');
+        const runeContainer = $('#perks > div:last-child > .content-selected svg');
         if (!runeContainer) throw new Error(`Failed to get runes`);
 
         runeContainer.each((i, r) => {
-            const runeId = $(r).attr('data-xlink-href');
-            if (!runeId) throw new Error(`Failed to fetch rune index {${i}}`);
+            const rawRunePic = $(`> image`, r).attr('data-xlink-href');
+            const rawRuneId = $($(r).parent()).attr('data-tooltip');
 
-            const picId = basename(runeId).toLocaleLowerCase();
-            const isSpecial = runeId.indexOf('metasrc.com') !== -1;
+            if (!rawRuneId || !rawRunePic) throw new Error(`Failed to fetch rune index {${i}}`);
+
+            const picId = parseInt(rawRuneId.replace('perk-', ''));
+            const isSpecial = rawRunePic.indexOf('metasrc.com') !== -1;
 
             if (isSpecial) {
-                const styleId = parseInt(picId.replace('.png', ''));
-
-                if (runes.primaryStyleId) runes.subStyleId = styleId;
-                else runes.primaryStyleId = styleId;
+                if (runes.primaryStyleId) runes.subStyleId = picId;
+                else runes.primaryStyleId = picId;
 
                 return;
             }
 
-            if (!perkMap[picId]) throw new Error(`Failed to map rune {${picId}}`);
-            runes.selectedPerkIds.push(perkMap[picId]);
+            runes.selectedPerkIds.push(picId);
         });
 
         return runes;

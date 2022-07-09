@@ -210,6 +210,7 @@ export class MenuService {
                     SettingsService.setSetting('provider', data.providers);
 
                     this.mainmenu = null;
+                    this.printMenu();
                 });
             });
         });

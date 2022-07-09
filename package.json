@@ -6,7 +6,7 @@
     "scripts": {
         "start": "vite-node ./index.ts",
         "build": "rollup -c && node ./compile.js",
-        "lint": "eslint ./**/*.{ts,tsx} --quiet",
+        "lint": "eslint ./src/**/*.{ts,tsx} --quiet",
         "pretty": "pretty-quick && yarn lint --fix",
         "prepare": "husky install",
         "postinstall": "nugget https://static.developer.riotgames.com/docs/lol/riotgames.pem -d ./node_modules/league-connect"

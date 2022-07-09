@@ -50,18 +50,12 @@ export class SocketAPI {
             if (!player) return;
 
             let role: Role = null;
-            if (player.assignedPosition) {
-                /*if (player.spell1Id === 11 || player.spell2Id === 11) { // 11 = SMITE
-                    role = 'jungle';
-                }*/
-
-                role = player.assignedPosition;
-            }
+            if (player.assignedPosition) role = player.assignedPosition;
 
             this.event.emit('onPlayerRoleUpdate', role);
         });
 
-        this.ws.subscribe('/lol-champ-select/v1/session', (data, event: any) => {
+        this.ws.subscribe('/lol-champ-select/v1/session', (data) => {
             if (this.prevPhase === data.timer.phase) return;
             this.prevPhase = data.timer.phase;
             this.event.emit('onLobbyPhaseChange', this.prevPhase);

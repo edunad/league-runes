@@ -26,9 +26,9 @@ export class App {
     public static role: Role | null = null;
 
     public static plugins: { [id: string]: RunePlugin } = {
-        opgg: new OPGG(),
-        metasrc: new MetaSRC(),
         ugg: new UGG(),
+        metasrc: new MetaSRC(),
+        opgg: new OPGG(),
     };
 
     public static init() {
@@ -39,6 +39,21 @@ export class App {
         Promise.all([SettingsService.init(), CacheService.init(), CredentialsAPI.init(), SocketAPI.init(), MenuService.init()])
             .then(() => {
                 this.registerEvents();
+                /*const provider = this.plugins['ugg'];
+                provider
+                    .getBuild(
+                        this.gamemode,
+                        {
+                            name: 'tahmkench',
+                            originalName: 'tahmkench',
+                            championId: 1,
+                            avatarPic: '',
+                        },
+                        this.role,
+                    )
+                    .then((build) => {
+                        //console.warn(build);
+                    });*/
             })
             .catch((err) => console.error(`ERROR: ${err}`));
     }

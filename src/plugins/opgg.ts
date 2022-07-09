@@ -16,7 +16,6 @@ import { ItemBlock } from '../types/itemSet';
 import { Role } from '../types/role';
 
 import { CacheService } from '../services/cache';
-import { MenuService } from '../services/menu';
 
 export class OPGG implements RunePlugin {
     public readonly pluginId: string = 'opgg';
@@ -31,11 +30,8 @@ export class OPGG implements RunePlugin {
 
     public async getBuild(gamemode: Gamemode, champion: Champion, role: Role | null): Promise<Build> {
         // Check cache first
-        const cachedPerks = await this.cache.readCache(gamemode, champion);
-        if (cachedPerks) {
-            MenuService.log(`[op.GG] Using cached data: ${gamemode} - ${champion.originalName}`);
-            return cachedPerks.build;
-        }
+        const cachedPerks = await this.cache.readCache(gamemode, champion, role);
+        if (cachedPerks) return cachedPerks.build;
         // ---
 
         this.fixedGamemode = this.mapGamemode(gamemode);
@@ -79,7 +75,7 @@ export class OPGG implements RunePlugin {
                 return build;
             })
             .then((build) => {
-                this.cache.writeCache(gamemode, champion, build);
+                this.cache.writeCache(gamemode, champion, role, build);
                 return build;
             });
     }
