@@ -132,7 +132,6 @@ export class OPGG implements RunePlugin {
     }
 
     public mapGamemode(gamemode: Gamemode): string {
-        if (gamemode === 'practicetool') return 'classic';
         return gamemode;
     }
 }

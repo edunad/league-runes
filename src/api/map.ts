@@ -18,7 +18,8 @@ export class MapAPI {
                 return resp.json();
             })
             .then((json: any) => {
-                const maps: Maps = { aram: 0, classic: 0, practicetool: 0, 'twisted-treeline': 0, urf: 0 };
+                const maps: Maps = { aram: 0, classic: 0, 'twisted-treeline': 0, urf: 0 };
+
                 Object.values(json).forEach((map: any) => {
                     let name = map.gameMode.toLowerCase();
                     if (name === 'nexusblitz') name = 'urf';

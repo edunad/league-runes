@@ -71,6 +71,7 @@ export class App {
         });
 
         SocketAPI.event.on('onGamemodeUpdate', (data: Gamemode) => {
+            MenuService.log(`[Runes] Gamemode ${data} detected!`);
             this.gamemode = data;
         });
 

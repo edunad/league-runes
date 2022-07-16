@@ -326,7 +326,7 @@ export class UGG implements RunePlugin {
     }
 
     public mapGamemode(gamemode: Gamemode): string {
-        if (gamemode === 'practicetool' || gamemode === 'classic') return '';
+        if (gamemode === 'urf' || gamemode === 'classic') return '';
         return `-${gamemode}`; // AKA: champion-gamemode
     }
 }

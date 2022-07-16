@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 
 import { CredentialsAPI } from './credentials';
 
-import { Gamemode } from '../types/gamemode';
+import { Gamemode, isSupportedGamemode } from '../types/gamemode';
 import { Champion } from '../types/champion';
 import { Role } from '../types/role';
 
@@ -12,6 +12,7 @@ export class SocketAPI {
     public static event: EventEmitter;
 
     private static prevPhase: string;
+    private static prevGamemode: Gamemode;
 
     public static async init(): Promise<boolean> {
         this.event = new EventEmitter();
@@ -61,13 +62,20 @@ export class SocketAPI {
 
         this.ws.subscribe('/lol-champ-select/v1/session', (data) => {
             if (this.prevPhase === data.timer.phase) return;
+
             this.prevPhase = data.timer.phase;
             this.event.emit('onLobbyPhaseChange', this.prevPhase);
         });
 
         this.ws.subscribe('/lol-gameflow/v1/session', (data, event: any) => {
             if (event.eventType !== 'Update' && data.phase === 'ChampSelect') return;
-            this.event.emit('onGamemodeUpdate', data.map.gameMode.toLowerCase() as Gamemode);
+
+            let gamemode = data.map.gameMode.toLowerCase();
+            if (!isSupportedGamemode(gamemode)) gamemode = 'classic';
+
+            if (this.prevGamemode === gamemode) return;
+            this.prevGamemode = gamemode;
+            this.event.emit('onGamemodeUpdate', gamemode as Gamemode);
         });
 
         /*this.ws.on('message', (stream) => {

@@ -15,7 +15,7 @@ export interface CacheData {
 }
 
 export class CacheService {
-    public readonly CACHE_VERSION: string = '0.0.2';
+    public readonly CACHE_VERSION: string = '0.0.3';
 
     public readonly TTL: number = 2;
     public pluginId: string;
