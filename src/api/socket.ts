@@ -68,12 +68,12 @@ export class SocketAPI {
         });
 
         this.ws.subscribe('/lol-gameflow/v1/session', (data, event: any) => {
-            if (event.eventType !== 'Update' && data.phase === 'ChampSelect') return;
+            if (event.eventType !== 'Update') return;
 
             let gamemode = data.map.gameMode.toLowerCase();
             if (!isSupportedGamemode(gamemode)) gamemode = 'classic';
-
             if (this.prevGamemode === gamemode) return;
+
             this.prevGamemode = gamemode;
             this.event.emit('onGamemodeUpdate', gamemode as Gamemode);
         });
