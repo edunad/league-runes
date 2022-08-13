@@ -32,7 +32,10 @@ export class SocketAPI {
 
     private static setupListeners(): void {
         this.ws.subscribe('/lol-champ-select/v1/skin-selector-info', (data, event: any) => {
-            if (event.eventType !== 'Create') return;
+            if (event.eventType === 'Delete' || data.selectedChampionId === 0) {
+                this.event.emit('onChampClear');
+                return;
+            }
 
             this.event.emit('onChampSelected', {
                 name: data.championName.toLowerCase().replace(/\s/g, '').replace("'", '').replace('.', '').replace('`', ''),

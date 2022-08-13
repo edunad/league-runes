@@ -8,6 +8,8 @@ import { Role } from '../types/role';
 import { SettingsService } from './settings';
 
 export class MenuService {
+    private static readonly DISABLE_LOG: boolean = false;
+
     private static readonly MAX_LOG: number = 7;
 
     private static championAvatar: string;
@@ -37,11 +39,15 @@ export class MenuService {
     }
 
     public static async clear(): Promise<void> {
+        if (this.DISABLE_LOG) return Promise.resolve();
+
         console.clear();
         await this.printLog();
     }
 
     private static printLog(): Promise<void> {
+        if (this.DISABLE_LOG) return Promise.resolve();
+
         return new Promise<void>((res) => {
             process.stdout.cursorTo(0, 10, () => {
                 process.stdout.clearScreenDown(() => {
@@ -84,7 +90,7 @@ export class MenuService {
     }
 
     private static printRole(): void {
-        if (this.roleMenu) return; // Already opened?
+        if (this.DISABLE_LOG || this.roleMenu) return; // Already opened?
 
         this.killMenus();
         this.clear().then(() => {
@@ -137,7 +143,7 @@ export class MenuService {
     }
 
     private static printMenu(): void {
-        if (this.mainmenu) return; // Already opened?
+        if (this.DISABLE_LOG || this.mainmenu) return; // Already opened?
 
         this.killMenus();
         this.clear().then(() => {

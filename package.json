@@ -8,8 +8,7 @@
         "build": "rollup -c && node ./compile.js",
         "lint": "eslint ./src/**/*.{ts,tsx} --quiet",
         "pretty": "pretty-quick && yarn lint --fix",
-        "prepare": "husky install",
-        "postinstall": "nugget https://static.developer.riotgames.com/docs/lol/riotgames.pem -d ./node_modules/league-connect"
+        "prepare": "husky install"
     },
     "engines": {
         "npm": "Please use yarn",
@@ -24,37 +23,37 @@
         "cheerio": "^1.0.0-rc.12",
         "fs-extra": "^10.1.0",
         "inquirer": "9.0.0",
-        "league-connect": "6.0.0-rc3",
-        "node-fetch": "^3.2.6",
-        "nugget": "^2.0.2",
+        "league-connect": "6.0.0-rc8",
+        "node-fetch": "^3.2.10",
         "terminal-art": "^1.4.3"
     },
     "devDependencies": {
         "@rollup/plugin-commonjs": "^22.0.1",
         "@rollup/plugin-json": "^4.1.0",
         "@rollup/plugin-node-resolve": "^13.3.0",
-        "@rollup/plugin-typescript": "^8.3.3",
+        "@rollup/plugin-typescript": "^8.3.4",
         "@types/cheerio": "^0.22.31",
-        "@typescript-eslint/eslint-plugin": "^5.30.5",
-        "@typescript-eslint/parser": "^5.30.5",
+        "@typescript-eslint/eslint-plugin": "^5.32.0",
+        "@typescript-eslint/parser": "^5.32.0",
         "archiver": "^5.3.1",
         "dotenv-flow": "^3.2.0",
-        "eslint": "^8.19.0",
+        "eslint": "^8.21.0",
         "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-prettier": "^4.2.1",
         "husky": "^8.0.1",
         "nexe": "^4.0.0-rc.1",
         "prettier": "^2.7.1",
         "pretty-quick": "^3.1.3",
-        "rollup": "^2.75.7",
+        "rollup": "^2.77.2",
         "rollup-plugin-copy": "^3.4.0",
         "rollup-plugin-delete": "^2.0.0",
         "signtool": "^1.0.0",
         "tslib": "^2.4.0",
         "typescript": "^4.7.4",
-        "vite-node": "^0.17.0"
+        "vite-node": "^0.20.3"
     },
     "resolutions": {
-        "inquirer@9.0.0": "patch:inquirer@npm:9.0.0#.yarn/patches/inquirer-npm-9.0.0-60e8238df3.patch"
+        "inquirer@9.0.0": "patch:inquirer@npm:9.0.0#.yarn/patches/inquirer-npm-9.0.0-60e8238df3.patch",
+        "league-connect@6.0.0-rc8": "patch:league-connect@npm:6.0.0-rc8#.yarn/patches/league-connect-npm-6.0.0-rc8-458a6cb71c.patch"
     }
 }

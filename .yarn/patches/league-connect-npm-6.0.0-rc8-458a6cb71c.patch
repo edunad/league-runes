@@ -1,0 +1,14 @@
+diff --git a/dist/index.js b/dist/index.js
+index b1f6a26633bfff371d3598d2adedbcb708a0831d..d4b71a7b01b94fedf28be55ede07d750033728fa 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -65,7 +65,8 @@ async function authenticate(options) {
+       const { stdout: rawStdout } = await exec(command, executionOptions);
+       const stdout = rawStdout.replace(/\s/g, "");
+       const [, port] = stdout.match(portRegex);
+-      const [, password] = stdout.match(passwordRegex);
++      const [, unreplacedPassword] = stdout.match(passwordRegex);
++      const password = unreplacedPassword.replace("--app-pid", "");
+       const [, pid] = stdout.match(pidRegex);
+       const unsafe = (options == null ? void 0 : options.unsafe) === true;
+       const hasCert = (options == null ? void 0 : options.certificate) !== void 0;

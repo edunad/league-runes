@@ -60,6 +60,7 @@ export class App {
 
     private static registerEvents(): void {
         SocketAPI.event.on('onChampSelected', (data: Champion) => {
+            if (this.champion && this.champion.championId === data.championId) return;
             this.champion = data;
 
             // Update menu ---
@@ -68,6 +69,11 @@ export class App {
             /// -----
 
             this.executeCommands();
+        });
+
+        SocketAPI.event.on('onChampClear', () => {
+            MenuService.log(`[Runes] Selection completed. Cleared champion`);
+            this.champion = null;
         });
 
         SocketAPI.event.on('onGamemodeUpdate', (data: Gamemode) => {

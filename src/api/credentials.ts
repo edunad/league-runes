@@ -47,7 +47,7 @@ export class CredentialsAPI {
                 if (!resp.ok) throw new Error(`[CredentialsAPI] Failed to get user`);
                 return resp.json();
             })
-            .then((data) => {
+            .then((data: any) => {
                 this.account = {
                     accountId: data.accountId as number,
                     summonerId: data.summonerId as number,
