@@ -72,6 +72,8 @@ export class App {
         });
 
         SocketAPI.event.on('onChampClear', () => {
+            if (this.champion == null) return;
+
             MenuService.log(`[Runes] Selection completed. Cleared champion`);
             this.champion = null;
         });
