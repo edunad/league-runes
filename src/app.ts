@@ -61,6 +61,8 @@ export class App {
     private static registerEvents(): void {
         SocketAPI.event.on('onChampSelected', (data: Champion) => {
             if (this.champion && this.champion.championId === data.championId) return;
+            if (this.gamemode == null) this.gamemode = 'classic';
+
             this.champion = data;
 
             // Update menu ---
