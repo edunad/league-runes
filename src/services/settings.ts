@@ -6,12 +6,13 @@ const CURRENT_VERSION: any = { version: 'v0.0.4', requireClean: true };
 
 export class SettingsService {
     private static currentSettings: any = SettingsService.getDefaultSettings();
+    private static readonly SETTINGS_LOCATION: string = `${process.env.APPDATA}/rune`;
 
     public static async init(): Promise<void> {
         const settings = await this.hasSettings();
         if (!settings) return;
 
-        const data = await readJson('./settings.json');
+        const data = await readJson(`${SettingsService.SETTINGS_LOCATION}/settings.json`);
         if (data == null) return;
 
         if (data.version != CURRENT_VERSION.version && CURRENT_VERSION.requireClean) {
@@ -23,7 +24,7 @@ export class SettingsService {
 
     public static async hasSettings(): Promise<boolean> {
         return new Promise<boolean>((resolve) => {
-            stat(`./settings.json`, (err) => {
+            stat(`${SettingsService.SETTINGS_LOCATION}/settings.json`, (err) => {
                 return resolve(!err ? true : false);
             });
         });
@@ -44,7 +45,7 @@ export class SettingsService {
     }
 
     public static async saveSettings(): Promise<void> {
-        await writeJson('./settings.json', this.currentSettings);
+        await writeJson(`${SettingsService.SETTINGS_LOCATION}/settings.json`, this.currentSettings);
     }
 
     private static getDefaultSettings(): any {

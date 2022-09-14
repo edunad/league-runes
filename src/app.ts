@@ -1,3 +1,5 @@
+import { ensureDir } from 'fs-extra';
+
 import { CredentialsAPI } from './api/credentials';
 import { ItemAPI } from './api/items';
 import { MapAPI } from './api/map';
@@ -36,10 +38,17 @@ export class App {
         console.clear();
         console.log(`[Rune] Initializing....`);
 
+        // Create folder if not exist
+        ensureDir(`${process.env.APPDATA}/rune`);
+
+        // SETUP
         Promise.all([SettingsService.init(), CacheService.init(), CredentialsAPI.init(), SocketAPI.init(), MenuService.init()])
             .then(() => {
                 this.registerEvents();
-                /*const provider = this.plugins['ugg'];
+                /*
+                // DEBUG PROVIDERS
+
+                const provider = this.plugins['ugg'];
                 provider
                     .getBuild(
                         this.gamemode,
@@ -49,11 +58,12 @@ export class App {
                             championId: 1,
                             avatarPic: '',
                         },
-                        this.role,
+                        /this.role,
                     )
                     .then((build) => {
                         //console.warn(build);
-                    });*/
+                    });
+                */
             })
             .catch((err) => console.error(`ERROR: ${err}`));
     }

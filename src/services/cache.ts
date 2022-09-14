@@ -15,7 +15,8 @@ export interface CacheData {
 }
 
 export class CacheService {
-    public readonly CACHE_VERSION: string = '0.0.3';
+    public static readonly CACHE_VERSION: string = '0.0.3';
+    public static readonly CACHE_LOCATION: string = `${process.env.APPDATA}/rune/cache`;
 
     public readonly TTL: number = 2;
     public pluginId: string;
@@ -23,11 +24,11 @@ export class CacheService {
 
     public constructor(pluginId: string) {
         this.pluginId = pluginId;
-        this.cachePath = `./.cache/${pluginId}`;
+        this.cachePath = `${CacheService.CACHE_LOCATION}/${pluginId}`;
     }
 
     public static async init(): Promise<any> {
-        return ensureDir('.cache');
+        return ensureDir(CacheService.CACHE_LOCATION);
     }
 
     public async hasCache(gamemode: Gamemode, champion: Champion, role: Role): Promise<boolean> {
@@ -44,7 +45,7 @@ export class CacheService {
             build: build,
             ttl: Math.floor(+new Date()) + this.TTL * 1000,
 
-            version: this.CACHE_VERSION,
+            version: CacheService.CACHE_VERSION,
         } as CacheData)
             .then(() => {
                 MenuService.log(`[Cache][${this.pluginId}] ${gamemode}-${champion.name}-${role ? role : 'default'}.json cached!`);
@@ -60,7 +61,7 @@ export class CacheService {
         return readJson(`${this.cachePath}/${gamemode}-${champion.name}-${role ? role : 'default'}.json`)
             .then((data) => {
                 if (!data) return null;
-                if (!data.version || data.version !== this.CACHE_VERSION) {
+                if (!data.version || data.version !== CacheService.CACHE_VERSION) {
                     MenuService.log(
                         `[Cache][${this.pluginId}] ${gamemode}-${champion.name}-${
                             role ? role : 'default'

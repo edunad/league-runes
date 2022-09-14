@@ -160,11 +160,11 @@ export class MenuService {
                                 value: 'skin-enabled',
                                 checked: SettingsService.getSetting('skin-enabled'),
                             },
-                            {
+                            /*{
                                 name: '  Enable random chroma skin',
                                 value: 'skin-chroma-enabled',
                                 checked: SettingsService.getSetting('skin-chroma-enabled'),
-                            },
+                            },*/
                             new inquirer.Separator('AUTO ===='),
                             {
                                 name: '  Enable Auto-Runes',
@@ -179,7 +179,7 @@ export class MenuService {
                         ],
                         onEvent: (key, data) => {
                             SettingsService.setSetting('skin-enabled', data.indexOf('skin-enabled') !== -1, false);
-                            SettingsService.setSetting('skin-chroma-enabled', data.indexOf('skin-chroma-enabled') !== -1, false);
+                            //SettingsService.setSetting('skin-chroma-enabled', data.indexOf('skin-chroma-enabled') !== -1, false);
                             SettingsService.setSetting('autorunes-enabled', data.indexOf('autorunes-enabled') !== -1, false);
                             SettingsService.setSetting('autoitems-enabled', data.indexOf('autoitems-enabled') !== -1, true);
                         },
@@ -209,7 +209,7 @@ export class MenuService {
                     if (!data) return;
 
                     SettingsService.setSetting('skin-enabled', data.settings.indexOf('skin-enabled') !== -1, false);
-                    SettingsService.setSetting('skin-chroma-enabled', data.settings.indexOf('skin-chroma-enabled') !== -1, false);
+                    //SettingsService.setSetting('skin-chroma-enabled', data.settings.indexOf('skin-chroma-enabled') !== -1, false);
                     SettingsService.setSetting('autorunes-enabled', data.settings.indexOf('autorunes-enabled') !== -1, false);
                     SettingsService.setSetting('autoitems-enabled', data.settings.indexOf('autoitems-enabled') !== -1, false);
 
