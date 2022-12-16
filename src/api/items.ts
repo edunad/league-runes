@@ -1,4 +1,4 @@
-import { createHttp1Request } from 'league-connect';
+import { createHttp2Request } from 'league-connect';
 
 import { CredentialsAPI } from './credentials';
 
@@ -9,11 +9,12 @@ export class ItemAPI {
     public static async getItemBuilds(): Promise<ItemBuild> {
         const user = CredentialsAPI.getUser();
 
-        return createHttp1Request(
+        return createHttp2Request(
             {
                 method: 'GET',
                 url: `/lol-item-sets/v1/item-sets/${user.summonerId}/sets`,
             },
+            CredentialsAPI.getSession(),
             CredentialsAPI.getToken(),
         )
             .then((resp) => {
@@ -26,7 +27,7 @@ export class ItemAPI {
     public static async validate(title: string): Promise<ItemBuild> {
         const user = CredentialsAPI.getUser();
 
-        return createHttp1Request(
+        return createHttp2Request(
             {
                 method: 'POST',
                 url: `/lol-item-sets/v1/item-sets/${user.summonerId}/validate`,
@@ -34,6 +35,7 @@ export class ItemAPI {
                     title: title,
                 },
             },
+            CredentialsAPI.getSession(),
             CredentialsAPI.getToken(),
         )
             .then((resp) => {
@@ -46,7 +48,7 @@ export class ItemAPI {
     public static async createItemPage(): Promise<boolean> {
         const user = CredentialsAPI.getUser();
 
-        return createHttp1Request(
+        return createHttp2Request(
             {
                 method: 'POST',
                 url: `/lol-item-sets/v1/item-sets/${user.summonerId}/sets`,
@@ -54,6 +56,7 @@ export class ItemAPI {
                     title: 'TEMP',
                 },
             },
+            CredentialsAPI.getSession(),
             CredentialsAPI.getToken(),
         )
             .then((resp) => {
@@ -86,12 +89,13 @@ export class ItemAPI {
             timestamp: Math.floor(+new Date()),
         };
 
-        return createHttp1Request(
+        return createHttp2Request(
             {
                 method: 'PUT',
                 url: `/lol-item-sets/v1/item-sets/${user.summonerId}/sets`,
                 body: { ...newBuild },
             },
+            CredentialsAPI.getSession(),
             CredentialsAPI.getToken(),
         )
             .then((resp) => {

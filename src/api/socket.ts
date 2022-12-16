@@ -16,6 +16,8 @@ export class SocketAPI {
 
     public static async init(): Promise<boolean> {
         this.event = new EventEmitter();
+
+        console.warn('[SocketAPI] Initializing...');
         this.ws = await createWebSocketConnection({
             authenticationOptions: {
                 awaitConnection: true,

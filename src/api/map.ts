@@ -1,4 +1,4 @@
-import { createHttp1Request } from 'league-connect';
+import { createHttp2Request } from 'league-connect';
 import { Gamemode } from '../types/gamemode';
 import { CredentialsAPI } from './credentials';
 
@@ -6,11 +6,12 @@ export type Maps = Record<Gamemode, number>;
 
 export class MapAPI {
     public static async getMaps(): Promise<Maps> {
-        return createHttp1Request(
+        return createHttp2Request(
             {
                 method: 'GET',
                 url: `/lol-maps/v1/maps`,
             },
+            CredentialsAPI.getSession(),
             CredentialsAPI.getToken(),
         )
             .then((resp) => {

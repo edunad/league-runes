@@ -45,9 +45,9 @@ export class App {
         Promise.all([SettingsService.init(), CacheService.init(), CredentialsAPI.init(), SocketAPI.init(), MenuService.init()])
             .then(() => {
                 this.registerEvents();
+
                 /*
                 // DEBUG PROVIDERS
-
                 const provider = this.plugins['ugg'];
                 provider
                     .getBuild(

@@ -3,9 +3,10 @@
     "packageManager": "yarn@3.2.1",
     "private": true,
     "version": "0.0.1",
+    "main": "./index.js",
     "scripts": {
         "start": "vite-node ./index.ts",
-        "build": "rollup -c && node ./compile.js",
+        "build": "esbuild ./index.ts --bundle --platform=node --minify --sourcemap=external --outfile=.output/index.js && node ./compile.js",
         "lint": "eslint ./src/**/*.{ts,tsx} --quiet",
         "pretty": "pretty-quick && yarn lint --fix",
         "prepare": "husky install"
@@ -19,41 +20,45 @@
             "pre-commit": "pretty"
         }
     },
+    "pkg": {
+        "scripts": "./output/index.js",
+        "assets": "./output/**/*",
+        "targets": [
+            "node19-win"
+        ],
+        "outputPath": "dist"
+    },
     "dependencies": {
         "cheerio": "^1.0.0-rc.12",
-        "fs-extra": "^10.1.0",
+        "fs-extra": "^11.1.0",
         "inquirer": "9.0.0",
-        "league-connect": "6.0.0-rc8",
-        "node-fetch": "^3.2.10",
+        "league-connect": "6.0.0-rc9",
+        "node-fetch": "3.3.0",
         "terminal-art": "^1.4.3"
     },
     "devDependencies": {
-        "@rollup/plugin-commonjs": "^22.0.1",
-        "@rollup/plugin-json": "^4.1.0",
-        "@rollup/plugin-node-resolve": "^13.3.0",
-        "@rollup/plugin-typescript": "^8.3.4",
         "@types/cheerio": "^0.22.31",
-        "@typescript-eslint/eslint-plugin": "^5.32.0",
-        "@typescript-eslint/parser": "^5.32.0",
+        "@typescript-eslint/eslint-plugin": "^5.46.0",
+        "@typescript-eslint/parser": "^5.46.0",
         "archiver": "^5.3.1",
         "dotenv-flow": "^3.2.0",
-        "eslint": "^8.21.0",
+        "esbuild": "^0.16.7",
+        "esbuild-plugin-copy": "^2.0.1",
+        "eslint": "^8.29.0",
         "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-prettier": "^4.2.1",
-        "husky": "^8.0.1",
-        "nexe": "^4.0.0-rc.1",
-        "prettier": "^2.7.1",
+        "husky": "^8.0.2",
+        "pkg": "^5.8.0",
+        "prettier": "^2.8.1",
         "pretty-quick": "^3.1.3",
-        "rollup": "^2.77.2",
-        "rollup-plugin-copy": "^3.4.0",
-        "rollup-plugin-delete": "^2.0.0",
+        "resedit": "^1.6.1",
         "signtool": "^1.0.0",
-        "tslib": "^2.4.0",
-        "typescript": "^4.7.4",
-        "vite-node": "^0.20.3"
+        "ts-loader": "^9.2.8",
+        "tslib": "^2.4.1",
+        "typescript": "^4.9.4",
+        "vite-node": "^0.25.6"
     },
     "resolutions": {
-        "inquirer@9.0.0": "patch:inquirer@npm:9.0.0#.yarn/patches/inquirer-npm-9.0.0-60e8238df3.patch",
-        "league-connect@6.0.0-rc8": "patch:league-connect@npm:6.0.0-rc8#.yarn/patches/league-connect-npm-6.0.0-rc8-458a6cb71c.patch"
+        "inquirer@9.0.0": "patch:inquirer@npm:9.0.0#.yarn/patches/inquirer-npm-9.0.0-60e8238df3.patch"
     }
 }

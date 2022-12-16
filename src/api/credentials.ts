@@ -1,4 +1,4 @@
-import { authenticate, createHttp1Request, Credentials } from 'league-connect';
+import { authenticate, createHttp2Request, createHttpSession, Credentials } from 'league-connect';
 
 export interface User {
     accountId: number;
@@ -11,36 +11,32 @@ export class CredentialsAPI {
     private static account: User;
 
     public static async init(): Promise<boolean> {
-        return (
-            authenticate({ awaitConnection: true })
-                .then((cred) => {
-                    this.apiCred = cred;
-                })
-                .then(() => {
-                    return this.getAccount();
-                })
-                /*.then((cred) => {
-                return createHttpSession(cred)
-                    .then((session) => {
-                        if (session == null) throw new Error('[CredentialsAPI] Failed to create session');
-                        console.warn(session);
-                        this.session = session;
-                    })
-                    .catch((err) => console.warn(`[CredentialsAPI] ${err}`));
-            })*/
-                .catch((err) => {
-                    console.warn(`[CredentialsAPI] ${err}`);
-                    return false;
-                })
-        );
+        console.warn('[CredentialsAPI] Initializing...');
+
+        return authenticate({ awaitConnection: true })
+            .then((cred) => {
+                this.apiCred = cred;
+                return createHttpSession(cred);
+            })
+            .then((session) => {
+                this.session = session;
+            })
+            .then(() => {
+                return this.getAccount();
+            })
+            .catch((err) => {
+                console.warn(`[CredentialsAPI] ${err}`);
+                return false;
+            });
     }
 
     private static getAccount(): Promise<boolean> {
-        return createHttp1Request(
+        return createHttp2Request(
             {
                 method: 'GET',
                 url: `/lol-summoner/v1/current-summoner/account-and-summoner-ids`,
             },
+            this.getSession(),
             this.getToken(),
         )
             .then((resp) => {

@@ -1,4 +1,4 @@
-import { createHttp1Request } from 'league-connect';
+import { createHttp2Request } from 'league-connect';
 import { CredentialsAPI } from './credentials';
 
 export interface Skin {
@@ -11,11 +11,12 @@ export interface Skin {
 
 export class SkinAPI {
     public static async getSkins(): Promise<Skin[] | null> {
-        return createHttp1Request(
+        return createHttp2Request(
             {
                 method: 'GET',
                 url: `/lol-champ-select/v1/skin-carousel-skins`,
             },
+            CredentialsAPI.getSession(),
             CredentialsAPI.getToken(),
         )
             .then((resp) => {
@@ -29,7 +30,7 @@ export class SkinAPI {
     }
 
     public static async selectSkin(skin: Skin): Promise<boolean> {
-        return createHttp1Request(
+        return createHttp2Request(
             {
                 method: 'PATCH',
                 url: `/lol-champ-select/v1/session/my-selection`,
@@ -37,6 +38,7 @@ export class SkinAPI {
                     selectedSkinId: skin.id,
                 },
             },
+            CredentialsAPI.getSession(),
             CredentialsAPI.getToken(),
         )
             .then((resp) => resp.ok)

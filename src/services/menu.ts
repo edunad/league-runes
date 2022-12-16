@@ -20,11 +20,12 @@ export class MenuService {
 
     public static event: EventEmitter;
 
-    public static init(): void {
+    public static init(): Promise<void> {
         this.event = new EventEmitter();
         this.logger = [];
 
         this.printMenu();
+        return Promise.resolve();
     }
 
     public static setIngame(ingame: boolean): void {
