@@ -1,4 +1,4 @@
-import { authenticate, createHttp2Request, createHttpSession, Credentials } from 'league-connect';
+import { authenticate, createHttp1Request, createHttpSession, Credentials } from 'league-connect';
 
 export interface User {
     accountId: number;
@@ -31,12 +31,11 @@ export class CredentialsAPI {
     }
 
     private static getAccount(): Promise<boolean> {
-        return createHttp2Request(
+        return createHttp1Request(
             {
                 method: 'GET',
                 url: `/lol-summoner/v1/current-summoner/account-and-summoner-ids`,
             },
-            this.getSession(),
             this.getToken(),
         )
             .then((resp) => {

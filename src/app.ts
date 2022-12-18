@@ -46,24 +46,22 @@ export class App {
             .then(() => {
                 this.registerEvents();
 
-                /*
                 // DEBUG PROVIDERS
-                const provider = this.plugins['ugg'];
+                /*const provider = this.plugins['ugg'];
                 provider
                     .getBuild(
                         this.gamemode,
                         {
-                            name: 'tahmkench',
-                            originalName: 'tahmkench',
+                            name: 'zilean',
+                            originalName: 'zilean',
                             championId: 1,
                             avatarPic: '',
                         },
-                        /this.role,
+                        this.role,
                     )
                     .then((build) => {
-                        //console.warn(build);
-                    });
-                */
+                        console.warn(build);
+                    });*/
             })
             .catch((err) => console.error(`ERROR: ${err}`));
     }

@@ -26,7 +26,6 @@ interface ItemMap {
 export class UGG implements RunePlugin {
     public readonly pluginId: string = 'ugg';
     private readonly WEBSITE: string = 'https://www.u.gg';
-    private readonly VERSION: string = '12.12.1';
 
     public cache: CacheService;
 
@@ -128,7 +127,10 @@ export class UGG implements RunePlugin {
         const containers = $('.recommended-build_items.media-query_DESKTOP_MEDIUM__DESKTOP_LARGE');
         if (!containers) throw new Error(`Failed to get items`);
 
-        const itemMap = await this.generateItemMap();
+        const uggVersion = await this.getUGGVersion($);
+        if (!uggVersion) throw new Error(`Failed to get items`);
+
+        const itemMap = await this.generateItemMap(uggVersion);
 
         const blocks: ItemBlock[] = [];
 
@@ -138,10 +140,23 @@ export class UGG implements RunePlugin {
         return blocks;
     }
 
-    private async generateItemMap(): Promise<ItemMap> {
+    private async getUGGVersion($: any): Promise<string> {
+        const championImgs = $('img.champion-image');
+        if (!championImgs) throw new Error(`Failed to get ugg version`);
+
+        const imgSrc = championImgs.attr('src');
+        if (!imgSrc || imgSrc.trim() === '') throw new Error(`Failed to get ugg version`);
+
+        const version = [...imgSrc.matchAll(/riot_static\/(.*)\/img\//g)];
+        if (!version || version.length !== 1) throw new Error(`Failed to get ugg version`);
+
+        return Promise.resolve(version[0][1]);
+    }
+
+    private async generateItemMap(version: string): Promise<ItemMap> {
         const itemMap: ItemMap = {};
 
-        return fetch(`https://static.u.gg/assets/lol/riot_static/${this.VERSION}/data/en_US/item.json`, {
+        return fetch(`https://static.u.gg/assets/lol/riot_static/${version}/data/en_US/item.json`, {
             method: 'GET',
             headers: {
                 'User-Agent': getAgent(),
@@ -173,6 +188,12 @@ export class UGG implements RunePlugin {
                         }
                     }
                 });
+
+                // Push remaining items to the last page
+                if (itemRow.length !== 0) {
+                    itemMap[`item${currentPage}.webp`].push(itemRow);
+                    itemRow = [];
+                }
 
                 return itemMap;
             });
@@ -304,7 +325,10 @@ export class UGG implements RunePlugin {
         const itemAtlas = itemMap[itemAtlasId];
         if (!itemAtlas) throw new Error(`Failed to get item atlas ${itemAtlasId}`);
 
-        const item = itemAtlas[itemAtlasIndex[1]][itemAtlasIndex[0]];
+        const itemData = itemAtlas[itemAtlasIndex[1]];
+        if (!itemData) throw new Error(`Failed to get item ${itemAtlasIndex[1]}-${itemAtlasIndex[0]} on atlas ${itemAtlasId}`);
+
+        const item = itemData[itemAtlasIndex[0]];
         if (!item) throw new Error(`Failed to get item ${itemAtlasIndex[1]}-${itemAtlasIndex[0]} on atlas ${itemAtlasId}`);
 
         return {

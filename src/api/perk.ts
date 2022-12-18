@@ -1,4 +1,4 @@
-import { createHttp2Request } from 'league-connect';
+import { createHttp1Request } from 'league-connect';
 import { basename } from 'path';
 
 import { PerkData } from '../types/perks';
@@ -30,12 +30,11 @@ export interface RunePage {
 
 export class PerkAPI {
     public static async getPerks(): Promise<PerkMap> {
-        return createHttp2Request(
+        return createHttp1Request(
             {
                 method: 'GET',
                 url: '/lol-perks/v1/perks',
             },
-            CredentialsAPI.getSession(),
             CredentialsAPI.getToken(),
         )
             .then((val) => val.json())
@@ -56,12 +55,11 @@ export class PerkAPI {
     }
 
     public static async getPages(): Promise<RunePage[]> {
-        return createHttp2Request(
+        return createHttp1Request(
             {
                 method: 'GET',
                 url: `/lol-perks/v1/pages`,
             },
-            CredentialsAPI.getSession(),
             CredentialsAPI.getToken(),
         )
             .then((val) => val.json())
@@ -69,7 +67,7 @@ export class PerkAPI {
     }
 
     public static async validatePage(page: RunePage): Promise<boolean> {
-        return createHttp2Request(
+        return createHttp1Request(
             {
                 method: 'PUT',
                 url: `/lol-perks/v1/pages/validate`,
@@ -77,7 +75,6 @@ export class PerkAPI {
                     id: page.id,
                 },
             },
-            CredentialsAPI.getSession(),
             CredentialsAPI.getToken(),
         )
             .then((resp) => resp.ok)
@@ -85,13 +82,12 @@ export class PerkAPI {
     }
 
     public static async setPerks(page: RunePage, perks: PerkData, name?: string): Promise<boolean> {
-        return await createHttp2Request(
+        return createHttp1Request(
             {
                 method: 'PUT',
                 url: `/lol-perks/v1/pages/${page.id}`,
                 body: { ...page, ...perks, name: name },
             },
-            CredentialsAPI.getSession(),
             CredentialsAPI.getToken(),
         )
             .then((resp) => {
