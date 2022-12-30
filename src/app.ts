@@ -38,6 +38,14 @@ export class App {
         console.clear();
         console.log(`[Rune] Initializing....`);
 
+        // God dam node
+        const warning = process.emitWarning;
+        process.emitWarning = (...args) => {
+            if (args[2] === 'DEP0123') return;
+            return warning.apply(process, args);
+        };
+        // -----
+
         // Create folder if not exist
         ensureDir(`${process.env.APPDATA}/rune`);
 
