@@ -25,7 +25,9 @@ interface ItemMap {
 
 export class UGG implements RunePlugin {
     public readonly pluginId: string = 'ugg';
+
     private readonly WEBSITE: string = 'https://www.u.gg';
+    private readonly WEBSITE_ASSETS: string = 'https://static.bigbrain.gg';
 
     public cache: CacheService;
 
@@ -40,19 +42,19 @@ export class UGG implements RunePlugin {
         // ---
 
         const build: Build = { perks: null, items: [] };
+        const url: string = `${this.WEBSITE}/lol/champions/${this.mapChampion(champion)}${this.mapGamemode(gamemode)}/build${
+            role ? `?role=${role}` : ''
+        }`;
 
-        return fetch(
-            `${this.WEBSITE}/lol/champions/${this.mapChampion(champion)}${this.mapGamemode(gamemode)}/build${role ? `?role=${role}` : ''}`,
-            {
-                method: 'GET',
-                redirect: 'follow',
-                follow: 10,
-                headers: {
-                    'User-Agent': getAgent(),
-                    'Content-Type': 'application/text',
-                },
+        return fetch(url, {
+            method: 'GET',
+            redirect: 'follow',
+            follow: 10,
+            headers: {
+                'User-Agent': getAgent(),
+                'Content-Type': 'application/text',
             },
-        )
+        })
             .then((resp) => {
                 if (!resp.ok) throw new Error(`Invalid response : ${resp.status}`);
                 return resp.text();
@@ -65,10 +67,10 @@ export class UGG implements RunePlugin {
 
                 const runes = await this.getRunes($);
                 if (!runes.primaryStyleId || !runes.subStyleId || runes.selectedPerkIds.length <= 0)
-                    throw new Error(`No runes found for ${champion}`);
+                    throw new Error(`No runes found for ${champion.originalName}`);
 
                 const items = await this.getItems($);
-                if (!items) throw new Error(`No items found for ${champion}`);
+                if (!items) throw new Error(`No items found for ${champion.originalName}`);
 
                 build.perks = runes;
                 build.items = items;
@@ -156,7 +158,7 @@ export class UGG implements RunePlugin {
     private async generateItemMap(version: string): Promise<ItemMap> {
         const itemMap: ItemMap = {};
 
-        return fetch(`https://static.u.gg/assets/lol/riot_static/${version}/data/en_US/item.json`, {
+        return fetch(`${this.WEBSITE_ASSETS}/assets/lol/riot_static/${version}/data/en_US/item.json`, {
             method: 'GET',
             headers: {
                 'User-Agent': getAgent(),
@@ -343,8 +345,8 @@ export class UGG implements RunePlugin {
     }
 
     public mapChampion(champion: Champion): string {
-        let name: string = champion.name;
-        if (name.indexOf('Nunu &') !== -1) name = 'nunu';
+        let name: string = champion.name.toLowerCase();
+        if (name.indexOf('nunu&') !== -1) name = 'nunu';
 
         return name;
     }

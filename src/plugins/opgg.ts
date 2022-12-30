@@ -64,10 +64,10 @@ export class OPGG implements RunePlugin {
 
                 const runes = await this.getRunes($);
                 if (!runes.primaryStyleId || !runes.subStyleId || runes.selectedPerkIds.length <= 0)
-                    throw new Error(`No runes found for ${champion}`);
+                    throw new Error(`No runes found for ${champion.originalName}`);
 
                 const items = await this.getItems($);
-                if (!items) throw new Error(`No items found for ${champion}`);
+                if (!items) throw new Error(`No items found for ${champion.originalName}`);
 
                 build.perks = runes;
                 build.items = items;
@@ -125,8 +125,8 @@ export class OPGG implements RunePlugin {
     }
 
     public mapChampion(champion: Champion): string {
-        let name: string = champion.name;
-        if (name.indexOf('Nunu &') !== -1) name = 'nunu';
+        let name: string = champion.name.toLowerCase();
+        if (name.indexOf('nunu&') !== -1) name = 'nunu';
 
         return name;
     }

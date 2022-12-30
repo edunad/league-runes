@@ -52,8 +52,8 @@ export class App {
                     .getBuild(
                         this.gamemode,
                         {
-                            name: 'zilean',
-                            originalName: 'zilean',
+                            name: 'Wukong',
+                            originalName: 'Wukong',
                             championId: 1,
                             avatarPic: '',
                         },

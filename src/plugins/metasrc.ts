@@ -40,7 +40,9 @@ export class MetaSRC implements RunePlugin {
         // ---
 
         const build: Build = { perks: null, items: [] };
-        return fetch(`${this.WEBSITE}/${this.mapGamemode(gamemode)}/champion/${this.mapChampion(champion)}/${role ? role : ''}`, {
+        const url: string = `${this.WEBSITE}/${this.mapGamemode(gamemode)}/champion/${this.mapChampion(champion)}/${role ? role : ''}`;
+
+        return fetch(url, {
             method: 'GET',
             redirect: 'follow',
             follow: 10,
@@ -213,8 +215,9 @@ export class MetaSRC implements RunePlugin {
     }
 
     public mapChampion(champion: Champion): string {
-        let name: string = champion.name;
-        if (name.indexOf('Nunu &') !== -1) name = 'nunu';
+        let name: string = champion.name.toLowerCase();
+        if (name.indexOf('nunu&') !== -1) name = 'nunu';
+        else if (name.indexOf('wukong') !== -1) name = 'monkeyking';
 
         return name;
     }
