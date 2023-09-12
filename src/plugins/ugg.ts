@@ -105,6 +105,8 @@ export class UGG implements RunePlugin {
             const nameId = runeId
                 .replace(/The Keystone /i, '')
                 .replace(/The Rune /i, '')
+                .replace(/The /i, '')
+                .replace(/ shard/i, '')
                 .toLocaleLowerCase();
 
             if (isSpecial) {
@@ -133,7 +135,6 @@ export class UGG implements RunePlugin {
         if (!uggVersion) throw new Error(`Failed to get items`);
 
         const itemMap = await this.generateItemMap(uggVersion);
-
         const blocks: ItemBlock[] = [];
 
         blocks.push(this.getStartingItems($, containers, itemMap)); // Add starting items
@@ -170,7 +171,7 @@ export class UGG implements RunePlugin {
                 return resp.json();
             })
             .then((json: any) => {
-                if (!json) throw new Error(`[U.op] Failed to get item schema`);
+                if (!json) throw new Error(`[U.gg] Failed to get item schema`);
                 const rawItems = json.data;
 
                 let currentPage = 0;
@@ -178,6 +179,8 @@ export class UGG implements RunePlugin {
 
                 Object.keys(rawItems).forEach((itmID) => {
                     const pageId = `item${currentPage}.webp`;
+
+                    console.warn(itmID);
 
                     itemRow.push(parseInt(itmID));
                     if (itemRow.length >= 10) {
@@ -317,7 +320,7 @@ export class UGG implements RunePlugin {
                     .replace('background-position:', '')
                     .replace(/px/g, '')
                     ?.split(' ')
-                    ?.map((a) => -parseInt(a) / 48);
+                    ?.map((a) => Math.abs(parseInt(a)) / 48);
             }
         });
 
@@ -332,6 +335,8 @@ export class UGG implements RunePlugin {
 
         const item = itemData[itemAtlasIndex[0]];
         if (!item) throw new Error(`Failed to get item ${itemAtlasIndex[1]}-${itemAtlasIndex[0]} on atlas ${itemAtlasId}`);
+
+        console.warn(item);
 
         return {
             id: item.toString(),

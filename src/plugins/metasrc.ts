@@ -110,17 +110,17 @@ export class MetaSRC implements RunePlugin {
     }
 
     public async getItems($: any): Promise<ItemBlock[]> {
-        const containers = $('.tooltip-container');
-        if (!containers) throw new Error(`Failed to get items`);
+        const container = $('#page-content');
+        if (!container) throw new Error(`Failed to get items`);
 
         const blocks: ItemBlock[] = [];
 
-        const startingContainer = $(containers[1]).children(`div:first-of-type`);
+        const startingContainer = $(container).children('div:first-of-type').children('div:last-of-type');
         if (!startingContainer) throw new Error(`Failed to get items`);
 
         blocks.push(this.getStartingItems($, startingContainer)); // Add starting items
 
-        const restContainer = $(containers[1]).children(`div:nth-child(2)`);
+        const restContainer = $(container).children(`div:nth-child(2)`).children('div:last-of-type');
         if (!restContainer) throw new Error(`Failed to get items`);
 
         blocks.push(...this.getNormalItems($, restContainer)); // Add remaining items
@@ -143,8 +143,10 @@ export class MetaSRC implements RunePlugin {
             type: 'Extra',
         };
 
-        const normalItems = $(itemContainer).find(`> div:last-of-type > div:first-of-type img`);
-        normalItems.each((o, el) => {
+        const container = itemContainer.children(':first-of-type').find('div > div > div');
+        const $clean = load(`<body>${container.html()}</body>`);
+
+        $clean('img').each((o, el) => {
             const elm = $(el);
             if (!elm) return;
 
@@ -160,9 +162,7 @@ export class MetaSRC implements RunePlugin {
     }
 
     private getStartingItems($: any, startingContainer: any): ItemBlock {
-        const startingItems = $(startingContainer).find(
-            `> div:last-of-type > div:last-of-type > div > div:first-of-type > div:last-of-type > div > div`,
-        );
+        const startingItems = startingContainer.find('div:last-of-type > div:last-of-type > div > div:last-of-type > div > div');
 
         const $clean = load(`<body>${startingItems.html()}</body>`);
         const items = [];
