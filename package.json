@@ -6,7 +6,7 @@
     "main": "./index.js",
     "scripts": {
         "start": "vite-node ./index.ts",
-        "build": "esbuild ./index.ts --bundle --platform=node --minify --sourcemap=external --outfile=.output/index.js && node ./compile.js",
+        "build": "esbuild ./index.ts --bundle --platform=node --minify --sourcemap=external --outfile=.output/index.js && node ./compile.mjs",
         "lint": "eslint ./src/**/*.{ts,tsx} --quiet",
         "pretty": "pretty-quick && yarn lint --fix",
         "prepare": "husky install"

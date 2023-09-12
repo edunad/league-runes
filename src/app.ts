@@ -58,17 +58,17 @@ export class App {
                 /*const provider = this.plugins['ugg'];
                 provider
                     .getBuild(
-                        this.gamemode,
+                        'classic',
                         {
-                            name: 'Wukong',
-                            originalName: 'Wukong',
+                            name: 'ashe',
+                            originalName: 'ashe',
                             championId: 1,
                             avatarPic: '',
                         },
                         this.role,
                     )
                     .then((build) => {
-                        console.warn(build);
+                        //console.warn(build);
                     });*/
             })
             .catch((err) => console.error(`ERROR: ${err}`));

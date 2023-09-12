@@ -2,7 +2,7 @@
 
 import { readJson, writeJson, stat } from 'fs-extra';
 
-const CURRENT_VERSION: any = { version: 'v0.0.4', requireClean: true };
+const CURRENT_VERSION: any = { version: 'v0.0.5', requireClean: true };
 
 export class SettingsService {
     private static currentSettings: any = SettingsService.getDefaultSettings();
@@ -51,7 +51,7 @@ export class SettingsService {
     private static getDefaultSettings(): any {
         return {
             version: CURRENT_VERSION.version,
-            provider: 'ugg',
+            provider: 'metasrc',
 
             'skin-enabled': true,
             'skin-chroma-enabled': true,

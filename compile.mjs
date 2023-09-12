@@ -1,14 +1,9 @@
-const { exec } = require('pkg');
-const path = require('path');
-const packg = require('./package.json');
-
-const ResEdit = require('resedit');
-
-const fs = require('fs-extra');
-const signtool = require('signtool');
-const archiver = require('archiver');
-
-require('dotenv-flow').config();
+import { exec } from 'pkg';
+import fs from 'fs-extra';
+import signtool from 'signtool';
+import archiver from 'archiver';
+import { config } from 'dotenv-flow';
+config();
 
 /// Cleanup -----
 fs.removeSync('.bin'); // cleanup
@@ -55,7 +50,7 @@ exec(['./.output/index.js', '--target', 'latest-win', '--output', './.bin/Rune.e
     */
 
     fs.removeSync('.output'); // Remove compiled files
-    signtool.sign('.bin/Rune.exe', { certificate: '.cert/cake_cert.pfx', password: `${process.env.CERT_PASSWORD}` }).then((result) => {
+    signtool.sign('.bin/Rune.exe', { certificate: '.cert/FailCake.pfx', password: `${process.env.CERT_PASSWORD}` }).then((result) => {
         if (result.code !== 0) throw new Error(`Failed to sign Rune.exe: ${result.code}`);
 
         archive.pipe(output);
